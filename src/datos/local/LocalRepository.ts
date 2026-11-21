@@ -1,0 +1,137 @@
+import type { IDBPDatabase } from 'idb';
+import { aIsoLocal, normalizarDatos, nuevoId, VERSION_ESQUEMA, type DatosRegistro, type Registro } from '../../dominio/modelo';
+import { resolverConflicto } from '../../dominio/conflictos';
+import type { CambioPendiente, Outbox, RegistroRepository, ResultadoFusion } from '../contratos';
+import type { CompletometroDB } from './db';
+
+type Opciones = {
+  db: () => Promise<IDBPDatabase<CompletometroDB>>;
+  dispositivoId: () => Promise<string>;
+  /** Se llama tras cada escritura hecha por el usuario (para el contador de "cambios sin respaldar"). */
+  alEscribir?: () => void | Promise<void>;
+  ahora?: () => Date;
+};
+
+/** Implementación de RegistroRepository sobre IndexedDB. Cada escritura deja un cambio en el outbox. */
+export class LocalRepository implements RegistroRepository, Outbox {
+  private oyentes = new Set<() => void>();
+  constructor(private o: Opciones) {}
+
+  private ahora() {
+    return aIsoLocal(this.o.ahora?.() ?? new Date());
+  }
+
+  private avisar() {
+    for (const f of this.oyentes) f();
+  }
+
+  suscribir(alCambiar: () => void) {
+    this.oyentes.add(alCambiar);
+    return () => this.oyentes.delete(alCambiar);
+  }
+
+  async listar(opciones: { incluirEliminados?: boolean } = {}) {
+    const todos = await (await this.o.db()).getAll('registros');
+    return opciones.incluirEliminados ? todos : todos.filter((r) => !r.eliminado_en);
+  }
+
+  async obtener(id: string) {
+    return (await this.o.db()).get('registros', id);
+  }
+
+  private async escribir(r: Registro, operacion: CambioPendiente['operacion']) {
+    const db = await this.o.db();
+    const tx = db.transaction(['registros', 'outbox'], 'readwrite');
+    await Promise.all([
+      tx.objectStore('registros').put(r),
+      tx.objectStore('outbox').add({ entidad: 'registro', entidad_id: r.id, operacion, fecha: r.actualizado_en }),
+      tx.done,
+    ]);
+  }
+
+  async crear(datos: DatosRegistro) {
+    const ahora = this.ahora();
+    const r: Registro = {
+      ...normalizarDatos(datos),
+      id: nuevoId(),
+      creado_en: ahora,
+      actualizado_en: ahora,
+      eliminado_en: null,
+      dispositivo_id: await this.o.dispositivoId(),
+      estado_sync: 'pendiente',
+      version_esquema: VERSION_ESQUEMA,
+    };
+    await this.escribir(r, 'crear');
+    await this.o.alEscribir?.();
+    this.avisar();
+    return r;
+  }
+
+  async actualizar(id: string, cambios: Partial<DatosRegistro>) {
+    const actual = await this.obtener(id);
+    if (!actual) throw new Error('No encontré ese registro.');
+    const { id: _i, creado_en: _c, ...resto } = actual;
+    void _i; void _c;
+    const r: Registro = {
+      ...actual,
+      ...normalizarDatos({ ...resto, ...cambios }),
+      actualizado_en: this.ahora(),
+      dispositivo_id: await this.o.dispositivoId(),
+      estado_sync: 'pendiente',
+      version_esquema: VERSION_ESQUEMA,
+    };
+    await this.escribir(r, 'actualizar');
+    await this.o.alEscribir?.();
+    this.avisar();
+    return r;
+  }
+
+  async eliminar(id: string) {
+    const actual = await this.obtener(id);
+    if (!actual || actual.eliminado_en) return;
+    const ahora = this.ahora();
+    await this.escribir({ ...actual, eliminado_en: ahora, actualizado_en: ahora, estado_sync: 'pendiente' }, 'eliminar');
+    await this.o.alEscribir?.();
+    this.avisar();
+  }
+
+  async fusionar(entrantes: Registro[]): Promise<ResultadoFusion> {
+    const db = await this.o.db();
+    const tx = db.transaction(['registros', 'outbox'], 'readwrite');
+    const store = tx.objectStore('registros');
+    const resultado: ResultadoFusion = { nuevos: 0, actualizados: 0, ignorados: 0 };
+    for (const e of entrantes) {
+      const local = await store.get(e.id);
+      const decision = resolverConflicto(local, e);
+      if (decision === 'ignora') {
+        resultado.ignorados++;
+        continue;
+      }
+      await store.put(e);
+      if (e.estado_sync === 'pendiente') {
+        await tx.objectStore('outbox').add({ entidad: 'registro', entidad_id: e.id, operacion: 'importar', fecha: e.actualizado_en });
+      }
+      if (decision === 'nuevo') resultado.nuevos++;
+      else resultado.actualizados++;
+    }
+    await tx.done;
+    if (resultado.nuevos || resultado.actualizados) this.avisar();
+    return resultado;
+  }
+
+  // --- Outbox (cola de cambios pendientes; hoy no se envía a ningún lado) ---
+
+  async pendientes() {
+    return (await this.o.db()).getAll('outbox');
+  }
+
+  async contar() {
+    return (await this.o.db()).count('outbox');
+  }
+
+  async confirmar(seqs: number[]) {
+    const db = await this.o.db();
+    const tx = db.transaction('outbox', 'readwrite');
+    await Promise.all([...seqs.map((s) => tx.store.delete(s)), tx.done]);
+  }
+}
