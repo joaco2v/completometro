@@ -190,7 +190,7 @@ describe('modelo y conflictos', () => {
     delete viejo.preparado_por;
     delete viejo.preparado_por_nombre;
     const m = migrarRegistro(viejo as never);
-    expect(m).toMatchObject({ preparado_por: null, preparado_por_nombre: null, version_esquema: 2, actualizado_en: viejo.actualizado_en });
+    expect(m).toMatchObject({ preparado_por: null, preparado_por_nombre: null, tipo_completo: null, veggie: false, version_esquema: 3, actualizado_en: viejo.actualizado_en });
   });
 
   it('rechaza puntuación fuera de 1–10', () => {

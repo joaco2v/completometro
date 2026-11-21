@@ -35,6 +35,12 @@ describe('aplicarEdicionMasiva', () => {
     expect(local.preparado_por).toBeNull();
   });
 
+  it('cambia el tipo de completo y si es veggie', () => {
+    const r = aplicarEdicionMasiva(base({ tipo_completo: 'completo' }), { tipo_completo: 'italiano', veggie: true });
+    expect(r).toMatchObject({ tipo_completo: 'italiano', veggie: true, puntuacion: 7 });
+    expect(aplicarEdicionMasiva(r, { tipo_completo: null }).tipo_completo).toBeNull();
+  });
+
   it('detecta una edición vacía', () => {
     expect(edicionVacia({})).toBe(true);
     expect(edicionVacia({ emocion: null })).toBe(false);

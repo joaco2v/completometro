@@ -317,6 +317,18 @@ export function resumenAnual(rs: readonly Registro[], anio: number, ahora: Date,
   };
 }
 
+/** Completos por tipo (italiano, dinámico…), de más a menos. Los registros sin tipo no cuentan. */
+export function distribucionTipos(rs: readonly Registro[]): { tipo: string; completos: number }[] {
+  const m = new Map<string, number>();
+  for (const r of vivos(rs)) if (r.tipo_completo) m.set(r.tipo_completo, (m.get(r.tipo_completo) ?? 0) + r.cantidad);
+  return [...m].map(([tipo, completos]) => ({ tipo, completos })).sort((a, b) => b.completos - a.completos || a.tipo.localeCompare(b.tipo));
+}
+
+/** Completos veggie (vienesa vegetal). */
+export function completosVeggie(rs: readonly Registro[]): number {
+  return sumar(vivos(rs).filter((r) => r.veggie));
+}
+
 /** Años con datos (más el actual), de más reciente a más antiguo. */
 export function aniosConDatos(rs: readonly Registro[], ahora: Date): number[] {
   const s = new Set(vivos(rs).map(anioDe));

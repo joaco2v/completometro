@@ -5,7 +5,8 @@
 
 /** Versión actual del esquema de un registro. Súbela cuando cambie la forma de los datos. */
 // v2: la nota (puntuacion) es del completo y vale para cualquier lugar; se agrega preparado_por.
-export const VERSION_ESQUEMA = 2;
+// v3: tipo de completo (italiano, dinámico…) y si es veggie.
+export const VERSION_ESQUEMA = 3;
 
 export type TipoLugar = 'local' | 'otro';
 export type OrigenCoordenadas = 'gps' | 'foto_exif' | 'manual';
@@ -24,6 +25,10 @@ export interface DatosRegistro {
   nombre_local: string | null;
   /** Nota del completo, de 1 a 10 (en cualquier lugar). */
   puntuacion: number | null;
+  /** Tipo de completo: id de tipos.ts ("italiano", "dinamico"…) o un texto propio. */
+  tipo_completo: string | null;
+  /** Si la vienesa era vegetal. */
+  veggie: boolean;
   /** Solo si tipo_lugar === 'otro'. */
   preparado_por: PreparadoPor | null;
   /** Nombre de quien lo preparó (opcional, solo si preparado_por === 'otra_persona'). */
@@ -65,6 +70,8 @@ export function registroVacio(ahora: Date = new Date()): DatosRegistro {
     tipo_lugar: 'local',
     nombre_local: null,
     puntuacion: null,
+    tipo_completo: null,
+    veggie: false,
     preparado_por: null,
     preparado_por_nombre: null,
     emocion: null,
@@ -104,6 +111,8 @@ export function normalizarDatos(d: DatosRegistro): DatosRegistro {
     tipo_lugar: esLocal ? 'local' : 'otro',
     nombre_local: nombre || null,
     puntuacion,
+    tipo_completo: d.tipo_completo?.trim() ? d.tipo_completo.trim().replace(/\s+/g, ' ').slice(0, 40) : null,
+    veggie: d.veggie === true,
     preparado_por,
     preparado_por_nombre: nombrePrep || null,
     emocion: d.emocion || null,
@@ -136,6 +145,8 @@ export function migrarRegistro(r: Registro): Registro {
     ...r,
     preparado_por: r.preparado_por ?? null,
     preparado_por_nombre: r.preparado_por_nombre ?? null,
+    tipo_completo: r.tipo_completo ?? null,
+    veggie: r.veggie === true,
     version_esquema: VERSION_ESQUEMA,
   };
 }

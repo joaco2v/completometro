@@ -9,6 +9,7 @@ import type { PreparadoPor, TipoLugar } from '../../dominio/modelo';
 import { useEstado } from '../estado';
 import { plural } from '../formato';
 import { BuscadorLocal } from './BuscadorLocal';
+import { SelectorTipo } from './SelectorTipo';
 import { Modal } from './Modal';
 
 /** Un bloque con casilla "Cambiar …": si no está marcada, ese dato no se toca. */
@@ -24,17 +25,19 @@ function Campo({ titulo, activo, alCambiar, children }: { titulo: string; activo
   );
 }
 
-type Activos = Record<'cantidad' | 'lugar' | 'puntuacion' | 'emocion' | 'hambre' | 'preparado' | 'notas' | 'fecha', boolean>;
+type Activos = Record<'cantidad' | 'lugar' | 'puntuacion' | 'tipo' | 'veggie' | 'emocion' | 'hambre' | 'preparado' | 'notas' | 'fecha', boolean>;
 
 /** Editar varios registros a la vez. */
 export function EditarVarios({ ids, alCerrar, alTerminar }: { ids: string[]; alCerrar: () => void; alTerminar: () => void }) {
   const { registros, ajustes, ahora, toast } = useEstado();
-  const [activos, setActivos] = useState<Activos>({ cantidad: false, lugar: false, puntuacion: false, emocion: false, hambre: false, preparado: false, notas: false, fecha: false });
+  const [activos, setActivos] = useState<Activos>({ cantidad: false, lugar: false, puntuacion: false, tipo: false, veggie: false, emocion: false, hambre: false, preparado: false, notas: false, fecha: false });
   const [cantidad, setCantidad] = useState(1);
   const [tipoLugar, setTipoLugar] = useState<TipoLugar>('local');
   const [nombreLocal, setNombreLocal] = useState('');
   const [coords, setCoords] = useState<{ latitud: number; longitud: number } | null>(null);
   const [puntuacion, setPuntuacion] = useState<number | null>(null);
+  const [tipo, setTipo] = useState<string | null>(null);
+  const [veggie, setVeggie] = useState(false);
   const [emocion, setEmocion] = useState<string | null>(null);
   const [hambre, setHambre] = useState<number | null>(null);
   const [preparadoPor, setPreparadoPor] = useState<PreparadoPor | null>(null);
@@ -55,6 +58,8 @@ export function EditarVarios({ ids, alCerrar, alTerminar }: { ids: string[]; alC
       lugar: { tipo_lugar: tipoLugar, nombre_local: nombreLocal, latitud: coords?.latitud ?? null, longitud: coords?.longitud ?? null },
     }),
     ...(activos.puntuacion && { puntuacion }),
+    ...(activos.tipo && { tipo_completo: tipo }),
+    ...(activos.veggie && { veggie }),
     ...(activos.emocion && { emocion }),
     ...(activos.hambre && { hambre }),
     ...(activos.preparado && { preparado: { preparado_por: preparadoPor, preparado_por_nombre: preparadoNombre } }),
@@ -109,6 +114,18 @@ export function EditarVarios({ ids, alCerrar, alTerminar }: { ids: string[]; alC
             ))}
           </div>
           <span class="ayuda">{puntuacion == null ? 'Sin elegir: se quita la nota.' : `Todos quedarán con ${puntuacion}/10.`}</span>
+        </Campo>
+
+        <Campo titulo="Cambiar el tipo de completo" activo={activos.tipo} alCambiar={activar('tipo')}>
+          <SelectorTipo tipo={tipo} alCambiarTipo={setTipo} />
+          {tipo == null && <span class="ayuda">Sin elegir: se quita el tipo.</span>}
+        </Campo>
+
+        <Campo titulo="Cambiar si es veggie 🌱" activo={activos.veggie} alCambiar={activar('veggie')}>
+          <div class="segmentado">
+            <button type="button" aria-pressed={veggie} onClick={() => setVeggie(true)}>🌱 Sí, veggie</button>
+            <button type="button" aria-pressed={!veggie} onClick={() => setVeggie(false)}>No</button>
+          </div>
         </Campo>
 
         <Campo titulo="Cambiar la emoción" activo={activos.emocion} alCambiar={activar('emocion')}>

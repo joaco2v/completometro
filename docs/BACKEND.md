@@ -57,6 +57,8 @@ como un cambio más. El servidor debe aplicar la misma regla. Implementación: `
   "tipo_lugar": "local",
   "nombre_local": "La Esquina del Completo",
   "puntuacion": 8,
+  "tipo_completo": "italiano",
+  "veggie": false,
   "preparado_por": null,
   "preparado_por_nombre": null,
   "emocion": "feliz",
@@ -73,7 +75,7 @@ como un cambio más. El servidor debe aplicar la misma regla. Implementación: `
   "eliminado_en": null,
   "dispositivo_id": "3f0a…",
   "estado_sync": "pendiente",
-  "version_esquema": 2
+  "version_esquema": 3
 }
 ```
 
@@ -85,7 +87,9 @@ como un cambio más. El servidor debe aplicar la misma regla. Implementación: `
 | `tipo_lugar` | `local` \| `otro` | |
 | `nombre_local` | texto | Solo si `tipo_lugar = local`. |
 | `puntuacion` | 1–10 | Nota del completo (cualquier lugar). |
-| `preparado_por`, `preparado_por_nombre` | `yo` \| `otra_persona`, texto | Solo si `tipo_lugar = otro`. Desde el esquema v2. |
+| `preparado_por`, `preparado_por_nombre` | `yo` | `otra_persona`, texto | Solo si `tipo_lugar = otro`. Desde el esquema v2. |
+| `tipo_completo` | texto | Id de tipos.ts (`italiano`, `dinamico`…) o un nombre propio. Desde el esquema v3. |
+| `veggie` | booleano | Vienesa vegetal. Desde el esquema v3. |\| `otra_persona`, texto | Solo si `tipo_lugar = otro`. Desde el esquema v2. |
 | `emocion` | texto | Id de emoción (base o personalizada `p_…`). Es una **etiqueta**, no una escala. |
 | `hambre` | 1–5 | Espectro: 1 = nada … 5 = me comería toda la olla. |
 | `latitud`, `longitud`, `precision_gps_m` | número | `origen_coordenadas`: `gps` \| `foto_exif` \| `manual`. |

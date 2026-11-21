@@ -9,11 +9,12 @@
 import { buscarEmocion, nivelHambre, type Emocion } from '../dominio/emociones';
 import type { RegistroConAcumulado } from '../dominio/modelo';
 import type { ResenaLocal } from '../dominio/resenas';
+import { buscarTipo } from '../dominio/tipos';
 import { claveDia, claveSemana } from '../dominio/fechas';
 
 export const COLUMNAS_CSV = [
   'id', 'fecha_hora', 'fecha', 'hora', 'anio', 'mes', 'semana_inicio', 'numero_acumulado_anio', 'cantidad',
-  'tipo_lugar', 'nombre_local', 'puntuacion', 'preparado_por', 'preparado_por_nombre', 'emocion', 'emocion_emoji', 'hambre_nivel', 'hambre_texto',
+  'tipo_lugar', 'nombre_local', 'puntuacion', 'tipo_completo', 'veggie', 'preparado_por', 'preparado_por_nombre', 'emocion', 'emocion_emoji', 'hambre_nivel', 'hambre_texto',
   'latitud', 'longitud', 'precision_gps_m', 'origen_coordenadas', 'foto_archivo', 'notas',
 ] as const;
 
@@ -51,6 +52,8 @@ export function filaCsv(r: RegistroConAcumulado, personalizadas: readonly Emocio
     ETIQUETA_LUGAR[r.tipo_lugar],
     celda(r.nombre_local, true),
     numero(r.puntuacion),
+    celda(buscarTipo(r.tipo_completo)?.nombre, true),
+    r.veggie ? 'Sí' : 'No',
     r.preparado_por ? ETIQUETA_PREPARADO[r.preparado_por] : '',
     celda(r.preparado_por_nombre, true),
     celda(emocion?.nombre, true),

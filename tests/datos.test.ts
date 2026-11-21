@@ -98,7 +98,7 @@ describe('migración de IndexedDB', () => {
 
     const d = crearDatos(nombre);
     const [r] = await d.repo.listar();
-    expect(r).toMatchObject({ id: viejo.id, preparado_por: null, preparado_por_nombre: null, version_esquema: 2, actualizado_en: viejo.actualizado_en });
+    expect(r).toMatchObject({ id: viejo.id, preparado_por: null, preparado_por_nombre: null, version_esquema: 3, actualizado_en: viejo.actualizado_en });
   });
 });
 
@@ -167,19 +167,19 @@ describe('CSV', () => {
     expect(cab).not.toMatch(/estado_sync|dispositivo|eliminado/);
     expect(fila).toContain('"Lo de ""Juan"", Ñuñoa"');
     expect(fila).toContain(',11,1,Local establecido,');
-    expect(fila).toContain('Ñuñoa",7,,,Feliz');
+    expect(fila).toContain('Ñuñoa",7,,No,,,Feliz');
     expect(fila).toContain(',Feliz,😄,5,Me comería toda la olla,-33.456900,-70.597500,8,gps,x.jpg,');
   });
 
   it('en casa: muestra quién lo preparó', () => {
     const rs = calcularAcumulados([reg(new Date(2026, 0, 3, 12), { tipo_lugar: 'otro', nombre_local: null, puntuacion: 10, preparado_por: 'otra_persona', preparado_por_nombre: 'Mi mamá' })]);
-    expect(generarCsv(rs)).toContain(',En casa u otro lugar,,10,Otra persona,Mi mamá,');
+    expect(generarCsv(rs)).toContain(',En casa u otro lugar,,10,,No,Otra persona,Mi mamá,');
   });
 
   it('importa respaldos v1 (sin "quién lo preparó")', () => {
     const v1 = { formato: 'completometro-respaldo', version_esquema: 1, registros: [{ ...reg(new Date(2026, 0, 1)), version_esquema: 1, preparado_por: undefined }], fotos: [] };
     const r = validarRespaldo(v1);
-    expect(r.registros[0]).toMatchObject({ preparado_por: null, version_esquema: 2 });
+    expect(r.registros[0]).toMatchObject({ preparado_por: null, tipo_completo: null, veggie: false, version_esquema: 3 });
   });
 
   it('neutraliza fórmulas en textos libres', () => {

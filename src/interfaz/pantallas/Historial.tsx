@@ -4,6 +4,7 @@ import { buscarEmocion, nivelHambre } from '../../dominio/emociones';
 import { claveMes, nombreMes } from '../../dominio/fechas';
 import { claveLocal } from '../../dominio/metricas';
 import { describirLugar, type Registro, type RegistroConAcumulado } from '../../dominio/modelo';
+import { buscarTipo } from '../../dominio/tipos';
 import { datos } from '../../datos';
 import { useEstado } from '../estado';
 import { entero, fechaRelativa, plural } from '../formato';
@@ -43,7 +44,7 @@ export function Historial() {
     const q = claveLocal(busqueda);
     const lista = calcularAcumulados(registros, ajustes?.contadoresIniciales)
       .reverse()
-      .filter((r) => !q || claveLocal(`${describirLugar(r)} ${r.notas ?? ''}`).includes(q));
+      .filter((r) => !q || claveLocal(`${describirLugar(r)} ${buscarTipo(r.tipo_completo)?.nombre ?? ''} ${r.veggie ? 'veggie' : ''} ${r.notas ?? ''}`).includes(q));
     const porMes = new Map<string, RegistroConAcumulado[]>();
     for (const r of lista) {
       const k = claveMes(new Date(r.fecha_hora));
@@ -113,7 +114,7 @@ export function Historial() {
       )}
 
       {registros.length > 0 && (
-        <input type="search" class="buscador" placeholder="Buscar local, persona o nota…" value={busqueda} onInput={(e) => setBusqueda(e.currentTarget.value)} aria-label="Buscar" />
+        <input type="search" class="buscador" placeholder="Buscar local, tipo, persona o nota…" value={busqueda} onInput={(e) => setBusqueda(e.currentTarget.value)} aria-label="Buscar" />
       )}
       {seleccionando && (
         <p class="ayuda">Toca los registros que quieres seleccionar, o un mes completo.</p>
@@ -142,6 +143,7 @@ export function Historial() {
               {rs.map((r) => {
                 const emo = buscarEmocion(r.emocion, personalizadas);
                 const hambre = nivelHambre(r.hambre);
+                const tipo = buscarTipo(r.tipo_completo);
                 const marcado = seleccionando && seleccion.has(r.id);
                 return (
                   <li key={r.id} class={`item-registro ${marcado ? 'marcado' : ''}`}>
@@ -160,6 +162,11 @@ export function Historial() {
                           {describirLugar(r)}
                           {r.cantidad > 1 && <span class="pastilla">×{r.cantidad}</span>}
                         </span>
+                        {(tipo || r.veggie) && (
+                          <span class="item-detalle item-tipo">
+                            {tipo && `${tipo.emoji} ${tipo.nombre}`}{tipo && r.veggie && ' · '}{r.veggie && '🌱 Veggie'}
+                          </span>
+                        )}
                         <span class="item-detalle">
                           {fechaRelativa(r.fecha_hora, ahora)}
                           {r.puntuacion != null && ` · ⭐ ${r.puntuacion}/10`}

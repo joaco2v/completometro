@@ -147,6 +147,18 @@ textarea { resize: vertical; }
 .nueva-emocion { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
 .nueva-emocion .input-emoji { width: 56px; flex: none; text-align: center; padding: 10px 4px; }
 
+.barras-tipos { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-direction: column; gap: 8px; }
+.barras-tipos li { display: grid; grid-template-columns: minmax(110px, 40%) 1fr auto; align-items: center; gap: 10px; }
+.barras-tipos .barra-etiqueta { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.92rem; }
+.barras-tipos .barra-valor { font-weight: 700; font-variant-numeric: tabular-nums; }
+.pastilla-veggie { background: color-mix(in srgb, var(--verde) 18%, var(--superficie)); }
+.item-tipo { color: var(--texto); font-weight: 600; }
+.selector-tipo { display: flex; flex-direction: column; gap: 6px; }
+.selector-tipo select { width: 100%; padding: 12px; font-size: 16px; }
+.check-veggie { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--borde); border-radius: 12px; cursor: pointer; background: var(--superficie); }
+.check-veggie input { width: 20px; height: 20px; accent-color: var(--verde); }
+.check-veggie.activo { border-color: var(--verde); background: color-mix(in srgb, var(--verde) 12%, var(--superficie)); }
+.check-veggie small { color: var(--texto-suave); font-weight: 400; }
 .escala-hambre { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
 .escala-hambre button { border: 1px solid var(--borde); background: var(--superficie); border-radius: 14px; padding: 8px 2px 6px;
   display: flex; flex-direction: column; align-items: center; gap: 4px; }

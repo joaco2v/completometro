@@ -17,6 +17,8 @@ export interface EdicionMasiva {
     longitud?: number | null;
   };
   puntuacion?: number | null;
+  tipo_completo?: string | null;
+  veggie?: boolean;
   emocion?: string | null;
   hambre?: number | null;
   /** Solo se aplica a los registros que quedan "en casa u otro lugar". */
@@ -47,6 +49,8 @@ export function aplicarEdicionMasiva(r: DatosRegistro, e: EdicionMasiva): DatosR
     }
   }
   if (e.puntuacion !== undefined) d.puntuacion = e.puntuacion;
+  if (e.tipo_completo !== undefined) d.tipo_completo = e.tipo_completo;
+  if (e.veggie !== undefined) d.veggie = e.veggie;
   if (e.emocion !== undefined) d.emocion = e.emocion;
   if (e.hambre !== undefined) d.hambre = e.hambre;
   if (e.preparado) {

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'preact/hooks';
-import { aniosConDatos, rankingLocales, registrosDelAnio, resumenAnual, seriePorPeriodo, type Periodo } from '../../dominio/metricas';
+import { aniosConDatos, completosVeggie, distribucionTipos, rankingLocales, registrosDelAnio, resumenAnual, seriePorPeriodo, type Periodo } from '../../dominio/metricas';
+import { buscarTipo } from '../../dominio/tipos';
 import { buscarEmocion, nivelHambre } from '../../dominio/emociones';
 import { etiquetaPeriodo } from '../../dominio/fechas';
 import { datos } from '../../datos';
@@ -21,6 +22,9 @@ export default function Dashboard() {
   const resumen = useMemo(() => resumenAnual(registros, anio, ahora, ajustes?.contadoresIniciales), [registros, anio, ahora, ajustes]);
   const serie = useMemo(() => seriePorPeriodo(registros, anio, periodo, ahora), [registros, anio, periodo, ahora]);
   const ranking = useMemo(() => rankingLocales(delAnio), [delAnio]);
+  const tipos = useMemo(() => distribucionTipos(delAnio), [delAnio]);
+  const veggie = useMemo(() => completosVeggie(delAnio), [delAnio]);
+  const maxTipo = Math.max(1, ...tipos.map((t) => t.completos));
   const etiquetas = serie.map((p) => etiquetaPeriodo(p.clave));
 
   // Emociones por periodo: semanas → últimas 12; meses → todos.
@@ -118,6 +122,27 @@ export default function Dashboard() {
               </tbody>
             </table>
           </div>
+        )}
+      </section>
+
+      <section class="tarjeta">
+        <div class="fila-titulo">
+          <h3>Tipos de completo</h3>
+          {veggie > 0 && <span class="pastilla pastilla-veggie">🌱 {entero(veggie)} veggie</span>}
+        </div>
+        {tipos.length === 0 ? <p class="ayuda">Elige el tipo de completo al registrar (italiano, dinámico…) para ver cuáles comes más.</p> : (
+          <ul class="barras-tipos">
+            {tipos.map((t) => {
+              const info = buscarTipo(t.tipo)!;
+              return (
+                <li key={t.tipo}>
+                  <span class="barra-etiqueta"><span aria-hidden="true">{info.emoji}</span> {info.nombre}</span>
+                  <span class="barra"><span style={{ width: `${(t.completos / maxTipo) * 100}%` }} /></span>
+                  <span class="barra-valor">{entero(t.completos)}</span>
+                </li>
+              );
+            })}
+          </ul>
         )}
       </section>
 

@@ -54,6 +54,14 @@ const MIGRACIONES: Migracion[] = [
     const resenas = db.createObjectStore('resenas', { keyPath: 'id' });
     resenas.createIndex('por_actualizado', 'actualizado_en');
   },
+  // v4: tipo de completo y veggie en cada registro (esquema de registro v3)
+  async (_db, tx) => {
+    let cursor = await tx.objectStore('registros').openCursor();
+    while (cursor) {
+      await cursor.update(migrarRegistro(cursor.value));
+      cursor = await cursor.continue();
+    }
+  },
 ];
 
 export const VERSION_DB = MIGRACIONES.length;

@@ -12,6 +12,7 @@ import { aInputFecha, entero, fechaRelativa } from '../formato';
 import { Modal } from './Modal';
 import { SelectorMapa } from './SelectorMapa';
 import { BuscadorLocal } from './BuscadorLocal';
+import { SelectorTipo } from './SelectorTipo';
 import { useUrlFoto } from './Foto';
 
 type EstadoUbicacion = { tipo: 'buscando' } | { tipo: 'lista' } | { tipo: 'error'; error: ErrorUbicacion } | { tipo: 'nada' };
@@ -154,6 +155,16 @@ export function FormularioRegistro({ registro, alCerrar }: { registro?: Registro
             <output class="contador-valor" aria-live="polite">{d.cantidad}</output>
             <button type="button" class="boton-redondo" onClick={() => set({ cantidad: Math.min(50, d.cantidad + 1) })} aria-label="Uno más">+</button>
           </div>
+        </div>
+
+        <div class="campo">
+          <span class="etiqueta">¿Qué completo?</span>
+          <SelectorTipo
+            tipo={d.tipo_completo}
+            veggie={d.veggie}
+            alCambiarTipo={(tipo_completo) => set({ tipo_completo })}
+            alCambiarVeggie={(veggie) => set({ veggie })}
+          />
         </div>
 
         <fieldset class="campo">

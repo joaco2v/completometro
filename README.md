@@ -3,7 +3,8 @@
 Lleva la cuenta de todos los completos que te comes en el año. Una app web instalable (PWA):
 gratis, sin tiendas de apps, sin cuentas y **sin internet**. Tus datos se quedan en tu teléfono.
 
-- Registrar un completo toma segundos: cantidad, dónde (local o en casa, y quién lo preparó), nota
+- Registrar un completo toma segundos: cantidad, tipo (italiano, dinámico, luco… y si es 🌱 veggie),
+  dónde (local o en casa, y quién lo preparó), nota
   del completo (1–10), emoción, nivel de hambre (de "nada" a "me comería toda la olla"), foto y
   ubicación automática. Al escribir el local, sugiere locales cercanos de OpenStreetMap.
 - Resumen al abrir: total del año, hoy/semana/mes, promedio semanal, racha y emociones del mes.
@@ -106,6 +107,8 @@ Para probar sin datos reales: [ejemplos/completos_ejemplo.csv](ejemplos/completo
 | `tipo_lugar` | "Local establecido" / "En casa u otro lugar" |
 | `nombre_local` | Solo locales |
 | `puntuacion` | Nota del completo, de 1 a 10 (en cualquier lugar) |
+| `tipo_completo` | Completo, Italiano, Dinámico, Luco, As, Chacarero, Especial, Vienesa sola u otro escrito a mano |
+| `veggie` | "Sí" si la vienesa era vegetal 🌱, si no "No" |
 | `preparado_por`, `preparado_por_nombre` | Solo en casa u otro lugar: "Yo" / "Otra persona" y su nombre (opcional) |
 | `emocion`, `emocion_emoji` | Emoción (etiqueta, sin valor numérico) |
 | `hambre_nivel`, `hambre_texto` | 1 = nada … 5 = me comería toda la olla |
