@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Política de privacidad · Completómetro</title>
+  <meta name="description" content="Cómo el Completómetro trata tus datos: todo queda en tu teléfono y, si lo conectas, en tu propio Google Drive." />
+  <link rel="icon" href="./icono.svg" type="image/svg+xml" />
+  <style>
+    :root { --rojo: #c8102e; --fondo: #fff8ee; --texto: #2a1a10; --suave: #7a6352; --borde: #eadbc6; color-scheme: light dark; }
+    @media (prefers-color-scheme: dark) { :root { --rojo: #ff5a6e; --fondo: #17110d; --texto: #f6ece2; --suave: #b9a593; --borde: #3d3026; } }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--fondo); color: var(--texto); font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+    main { max-width: 720px; margin: 0 auto; padding: 32px 16px 64px; }
+    header { display: flex; gap: 14px; align-items: center; margin-bottom: 8px; }
+    header img { width: 56px; height: 56px; border-radius: 14px; }
+    h1 { font-size: 1.7rem; line-height: 1.2; margin: 0; }
+    h2 { font-size: 1.2rem; margin: 2rem 0 0.5rem; color: var(--rojo); }
+    p, li { margin: 0.4rem 0; }
+    .fecha { color: var(--suave); font-size: 0.95rem; }
+    .resumen { border: 1px solid var(--borde); border-left: 5px solid var(--rojo); border-radius: 12px; padding: 12px 16px; margin: 20px 0; }
+    a { color: var(--rojo); }
+    code { font-size: 0.9em; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="./icono.svg" alt="" />
+    <div>
+      <h1>Política de privacidad del Completómetro</h1>
+      <p class="fecha">Última actualización: 21 de noviembre de 2026</p>
+    </div>
+  </header>
+
+  <div class="resumen">
+    <strong>En corto:</strong> el Completómetro no tiene servidores ni cuentas propias. Tus completos se guardan
+    en tu teléfono y, si tú lo conectas, en una carpeta privada de tu propio Google Drive. Nadie más, ni siquiera
+    quien hizo la app, puede ver tus datos.
+  </div>
+
+  <h2>1. Quién es responsable</h2>
+  <p>
+    El Completómetro (<a href="https://joaco2v.github.io/completometro/">joaco2v.github.io/completometro</a>) es un
+    proyecto personal, gratuito y de código abierto, hecho por
+    <a href="https://github.com/joaco2v">joaco2v</a>. Para consultas sobre privacidad, abre un
+    <a href="https://github.com/joaco2v/completometro/issues">issue en GitHub</a>.
+  </p>
+
+  <h2>2. Qué datos se usan y dónde quedan</h2>
+  <ul>
+    <li><strong>Tus registros</strong> (fecha, cantidad, tipo de completo, local, nota, emoción, hambre, ubicación,
+      foto y notas) y tus ajustes se guardan <strong>solo en tu teléfono</strong>, en el almacenamiento del navegador.</li>
+    <li><strong>Ubicación:</strong> la app la pide al navegador solo para anotar dónde comiste, y únicamente si das permiso.
+      También puede leerla de la foto que adjuntes. Se guarda junto al registro, en tu teléfono.</li>
+    <li><strong>Fotos:</strong> se guardan en tu teléfono (y en tu Google Drive si conectas el respaldo).</li>
+    <li>La app <strong>no usa</strong> cookies de seguimiento, analítica, publicidad ni cuentas propias.</li>
+  </ul>
+
+  <h2>3. Respaldo en Google Drive (opcional)</h2>
+  <p>Si tocas "Conectar con Google", la app pide estos permisos:</p>
+  <ul>
+    <li><code>drive.appdata</code>: crear, leer y actualizar archivos en una <strong>carpeta oculta y exclusiva de la app</strong>
+      dentro de tu Google Drive. La app <strong>no puede ver</strong> tus otros archivos, fotos ni documentos.</li>
+    <li><code>userinfo.email</code>: leer tu correo, solo para mostrarte con qué cuenta estás conectado.</li>
+  </ul>
+  <p>
+    Con esos permisos la app guarda ahí una copia de tus registros y fotos para respaldarlos y restaurarlos en otro
+    teléfono. Todo ocurre directamente entre tu navegador y Google: los datos <strong>no pasan por ningún servidor</strong>
+    de la app y no se comparten, venden ni usan para otro fin. El permiso dura aproximadamente una hora y se guarda
+    solo en la memoria del navegador.
+  </p>
+  <p>
+    El uso que hace el Completómetro de la información recibida de las APIs de Google cumple con la
+    <a href="https://developers.google.com/terms/api-services-user-data-policy">Política de datos del usuario de los servicios de API de Google</a>,
+    incluidos los requisitos de uso limitado.
+  </p>
+  <p>
+    Puedes quitar el acceso cuando quieras con "Desconectar" en Ajustes o desde
+    <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>. La copia en la carpeta
+    oculta se puede borrar desde Google Drive › Configuración › Administrar aplicaciones › Completómetro.
+  </p>
+
+  <h2>4. Servicios de terceros</h2>
+  <ul>
+    <li><strong>Mapas (OpenStreetMap):</strong> para dibujar el mapa, tu navegador descarga imágenes desde los servidores
+      de OpenStreetMap, que reciben tu dirección IP como cualquier sitio web.</li>
+    <li><strong>Sugerencias de locales (Photon / OpenStreetMap):</strong> cuando escribes el nombre de un local, se envía
+      ese texto y una ubicación aproximada al servicio Photon para sugerirte locales cercanos.</li>
+    <li><strong>Alojamiento (GitHub Pages):</strong> la app se descarga desde GitHub, que puede registrar datos técnicos
+      de la visita (como la IP) según su propia política.</li>
+    <li><strong>Google:</strong> solo si conectas el respaldo en Drive, según lo descrito arriba.</li>
+  </ul>
+
+  <h2>5. Tus derechos y control</h2>
+  <ul>
+    <li>Puedes ver, editar, exportar (CSV/ZIP) y eliminar tus registros cuando quieras desde la app.</li>
+    <li>"Eliminar todos los registros" en Ajustes borra tus datos de la app; borrar los datos del navegador los elimina del teléfono.</li>
+    <li>Como quien hizo la app no tiene copia de tus datos, no puede verlos, entregarlos ni borrarlos por ti: el control es tuyo.</li>
+  </ul>
+
+  <h2>6. Menores de edad</h2>
+  <p>La app no está dirigida a menores de 13 años y no recopila datos de ellos a sabiendas.</p>
+
+  <h2>7. Cambios</h2>
+  <p>
+    Si esta política cambia, se actualizará esta página y su fecha. El historial completo de cambios se puede ver en el
+    <a href="https://github.com/joaco2v/completometro/commits/main/public/privacidad.html">repositorio público</a>.
+  </p>
+
+  <p><a href="./">← Volver al Completómetro</a></p>
+</main>
+</body>
+</html>

@@ -236,7 +236,8 @@ export function Ajustes({ seccion }: { seccion: string | null }) {
         </div>
         <p class="ayuda">
           Gratis, sin publicidad y de código abierto (licencia MIT). Tus datos se guardan en tu teléfono y solo
-          salen de ahí cuando tú los exportas o respaldas.
+          salen de ahí cuando tú los exportas o respaldas.{' '}
+          <a href="./privacidad.html" target="_blank" rel="noopener">🔒 Política de privacidad</a>
         </p>
         <details class="detalles-tecnicos">
           <summary>Datos técnicos</summary>

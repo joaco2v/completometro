@@ -196,3 +196,6 @@ de licencia y el crédito.
 Sin servidores propios, sin analítica, sin publicidad. De internet solo se usan los mapas de
 OpenStreetMap, las sugerencias de locales (se envía lo que escribes en "Nombre del local" y una
 ubicación aproximada al servicio Photon de OpenStreetMap) y, si lo conectas, tu Google Drive. Tus datos salen del teléfono solo cuando tú exportas o respaldas.
+
+Política de privacidad completa: <https://joaco2v.github.io/completometro/privacidad.html>
+(el archivo está en [public/privacidad.html](public/privacidad.html); si haces un fork, cambia el autor y los enlaces).

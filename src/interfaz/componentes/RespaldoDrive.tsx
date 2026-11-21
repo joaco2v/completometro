@@ -52,7 +52,8 @@ export function TarjetaDrive() {
           </ol>
           <p class="ayuda">
             🔒 La app solo puede usar su propia carpeta oculta en tu Drive: no ve tus fotos ni documentos.
-            En un teléfono nuevo, conéctate con la misma cuenta y aparecen todos tus completos.
+            En un teléfono nuevo, conéctate con la misma cuenta y aparecen todos tus completos.{' '}
+            <a href="./privacidad.html" target="_blank" rel="noopener">Política de privacidad</a>
           </p>
           <button type="button" class="boton boton-primario boton-bloque" onClick={() => respaldar(true)} disabled={drive.sincronizando}>
             {drive.sincronizando ? 'Conectando…' : '☁️ Conectar con Google'}
