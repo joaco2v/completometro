@@ -243,6 +243,12 @@ textarea { resize: vertical; }
 .confirmar-texto { text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
 .campo-check { display: flex; gap: 10px; align-items: flex-start; font-size: 0.92rem; }
 .campo-check input { width: 20px; height: 20px; flex: none; margin-top: 2px; accent-color: var(--rojo); }
+.campo-masivo { border: 1px solid var(--borde); border-radius: 14px; padding: 12px; }
+.campo-masivo.activo { border-color: var(--rojo); }
+.campo-masivo .campo-check { align-items: center; cursor: pointer; }
+.campo-masivo .campo-check input { margin-top: 0; }
+.campo-masivo-cuerpo { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+input[type='date'] { width: 100%; padding: 12px; border: 1px solid var(--borde); border-radius: 12px; background: var(--superficie); font-size: 16px; }
 
 /* ---------- Ajustes ---------- */
 .fila-input { display: flex; gap: 8px; }

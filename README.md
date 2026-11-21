@@ -69,7 +69,8 @@ Primero abre este link en el teléfono: **https://joaco2v.github.io/completometr
   **"Cambiar (me olvidé de anotarlo)"** para ponerle la fecha y hora reales.
 - La primera vez, el teléfono pedirá permiso de **ubicación**. Si lo niegas, puedes marcar el lugar en el mapa.
 - En el **Historial** cada registro tiene ✏️ para editarlo y 🗑️ para eliminarlo. Con **☑️ Seleccionar**
-  puedes marcar varios (o un mes completo) y eliminarlos de una vez. Lo eliminado queda en
+  puedes marcar varios (o un mes completo) y editarlos o eliminarlos de una vez (por ejemplo,
+  ponerles la misma nota o moverlos a otro día). Lo eliminado queda en
   **Eliminados**, al final del historial, por si te arrepientes.
 - Para empezar de cero: **Ajustes › Eliminar todos los registros** (te pide escribir BORRAR para confirmar).
 

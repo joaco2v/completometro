@@ -32,6 +32,8 @@ export interface RegistroRepository {
   actualizar(id: string, cambios: Partial<DatosRegistro>): Promise<Registro>;
   /** Borrado lógico: marca eliminado_en (queda en la papelera). */
   eliminar(id: string): Promise<void>;
+  /** Edita varios en una sola operación (todo o nada). Devuelve cuántos se actualizaron. */
+  actualizarVarios(ids: readonly string[], cambiar: (r: DatosRegistro) => DatosRegistro): Promise<number>;
   /** Borrado lógico de varios en una sola operación. Devuelve cuántos se eliminaron. */
   eliminarVarios(ids: readonly string[]): Promise<number>;
   /** Saca de la papelera (quita eliminado_en). Devuelve cuántos se restauraron. */

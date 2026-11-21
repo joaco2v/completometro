@@ -1,7 +1,7 @@
 {
   "name": "completometro",
   "private": true,
-  "version": "0.5.0",
+  "version": "0.5.1",
   "license": "MIT",
   "description": "Completómetro: registro personal de completos (hot dogs chilenos). PWA offline-first.",
   "type": "module",

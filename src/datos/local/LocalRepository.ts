@@ -121,6 +121,34 @@ export class LocalRepository implements RegistroRepository, Outbox {
     return cambiados;
   }
 
+  /**
+   * Edita varios registros en una sola transacción. Primero valida todos:
+   * si alguno queda inválido, no se cambia ninguno. Devuelve cuántos se actualizaron.
+   */
+  async actualizarVarios(ids: readonly string[], cambiar: (r: DatosRegistro) => DatosRegistro): Promise<number> {
+    if (!ids.length) return 0;
+    const ahora = this.ahora();
+    const dispositivo_id = await this.o.dispositivoId();
+    const db = await this.o.db();
+    const actuales = (await Promise.all([...new Set(ids)].map((id) => db.get('registros', id))))
+      .filter((r): r is Registro => !!r && !r.eliminado_en);
+    const nuevos = actuales.map((r) => {
+      const { id: _i, creado_en: _c, actualizado_en: _a, eliminado_en: _e, dispositivo_id: _d, estado_sync: _s, version_esquema: _v, ...datos } = r;
+      return { ...r, ...cambiar(datos), actualizado_en: ahora, dispositivo_id, estado_sync: 'pendiente' as const, version_esquema: VERSION_ESQUEMA };
+    });
+    const tx = db.transaction(['registros', 'outbox'], 'readwrite');
+    for (const r of nuevos) {
+      await tx.objectStore('registros').put(r);
+      await tx.objectStore('outbox').add({ entidad: 'registro', entidad_id: r.id, operacion: 'actualizar', fecha: ahora });
+    }
+    await tx.done;
+    if (nuevos.length) {
+      await this.o.alEscribir?.();
+      this.avisar();
+    }
+    return nuevos.length;
+  }
+
   eliminarVarios(ids: readonly string[]) {
     return this.marcarVarios(ids, true);
   }

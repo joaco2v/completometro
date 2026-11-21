@@ -9,6 +9,7 @@ import { useEstado } from '../estado';
 import { entero, fechaRelativa, plural } from '../formato';
 import { Foto } from '../componentes/Foto';
 import { FormularioRegistro } from '../componentes/FormularioRegistro';
+import { EditarVarios } from '../componentes/EditarVarios';
 
 /** Registros en la papelera (borrado lógico), siempre al día. */
 function usePapelera(): Registro[] {
@@ -29,6 +30,7 @@ function usePapelera(): Registro[] {
 export function Historial() {
   const { registros, ajustes, ahora, toast } = useEstado();
   const [editando, setEditando] = useState<Registro | null>(null);
+  const [editandoVarios, setEditandoVarios] = useState<string[] | null>(null);
   const [busqueda, setBusqueda] = useState('');
   /** null = modo normal; un Set = modo "seleccionar varios". */
   const [seleccion, setSeleccion] = useState<Set<string> | null>(null);
@@ -212,14 +214,33 @@ export function Historial() {
           <button type="button" class="boton boton-chico" onClick={() => setSeleccion(todosVisiblesMarcados ? new Set() : new Set(visibles))}>
             {todosVisiblesMarcados ? 'Ninguno' : 'Todos'}
           </button>
-          {seleccion.size === 1 && (
-            <button type="button" class="boton boton-chico" onClick={() => { setEditando(registros.find((r) => seleccion.has(r.id)) ?? null); setSeleccion(null); }}>✏️ Editar</button>
-          )}
+          <button
+            type="button"
+            class="boton boton-chico"
+            disabled={!seleccion.size}
+            onClick={() => {
+              if (seleccion.size === 1) {
+                setEditando(registros.find((r) => seleccion.has(r.id)) ?? null);
+                setSeleccion(null);
+              } else {
+                setEditandoVarios([...seleccion]);
+              }
+            }}
+          >
+            ✏️ Editar
+          </button>
           <button type="button" class="boton boton-chico boton-peligro" disabled={!seleccion.size} onClick={eliminarSeleccion}>🗑️ Eliminar</button>
         </div>
       )}
 
       {editando && <FormularioRegistro registro={editando} alCerrar={() => setEditando(null)} />}
+      {editandoVarios && (
+        <EditarVarios
+          ids={editandoVarios}
+          alCerrar={() => setEditandoVarios(null)}
+          alTerminar={() => { setEditandoVarios(null); setSeleccion(null); }}
+        />
+      )}
     </div>
   );
 }
