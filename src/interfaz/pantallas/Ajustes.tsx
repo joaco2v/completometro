@@ -10,6 +10,7 @@ import { useEstado } from '../estado';
 import { entero, fechaRelativa, plural } from '../formato';
 import { PasosInstalar } from '../componentes/Instalar';
 import { TarjetaDrive, useDrive } from '../componentes/RespaldoDrive';
+import { ZonaPeligro } from '../componentes/EliminarTodo';
 
 export function Ajustes({ seccion }: { seccion: string | null }) {
   const { ajustes, registros, ahora, toast } = useEstado();
@@ -190,6 +191,8 @@ export function Ajustes({ seccion }: { seccion: string | null }) {
         <h3>📲 Deja la app en tu pantalla de inicio</h3>
         <PasosInstalar />
       </section>
+
+      <ZonaPeligro />
 
       <section class="tarjeta acerca" id="acerca">
         <div class="acerca-cabecera">

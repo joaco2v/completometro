@@ -33,6 +33,40 @@ describe('LocalRepository', () => {
     expect((await d.ajustes.leer()).cambiosDesdeRespaldo).toBe(3);
   });
 
+  it('elimina varios a la vez y los puede restaurar', async () => {
+    const d = nuevaDb();
+    const [a, b, c] = await Promise.all([1, 2, 3].map((i) => d.repo.crear({ ...registroVacio(new Date(2026, 0, i, 13)) })));
+    let avisos = 0;
+    d.repo.suscribir(() => avisos++);
+
+    expect(await d.repo.eliminarVarios([a.id, b.id, b.id, 'no-existe'])).toBe(2);
+    expect((await d.repo.listar()).map((r) => r.id)).toEqual([c.id]);
+    expect(avisos).toBe(1); // una sola notificación para todo el lote
+    expect(await d.repo.eliminarVarios([a.id])).toBe(0); // ya estaba eliminado
+
+    await new Promise((ok) => setTimeout(ok, 1100));
+    expect(await d.repo.restaurar([a.id, c.id])).toBe(1); // c no estaba eliminado
+    const restaurado = await d.repo.obtener(a.id);
+    expect(restaurado?.eliminado_en).toBeNull();
+    expect(restaurado!.actualizado_en > a.actualizado_en).toBe(true); // cambio más nuevo: gana al sincronizar
+    expect((await d.repo.listar()).length).toBe(2);
+
+    const ops = (await d.outbox.pendientes()).map((p) => p.operacion);
+    expect(ops.filter((o) => o === 'eliminar')).toHaveLength(2);
+    expect(ops.at(-1)).toBe('actualizar');
+  });
+
+  it('un borrado masivo viaja a otro teléfono al importar', async () => {
+    const d = nuevaDb();
+    const r = await d.repo.crear(registroVacio());
+    const otro = nuevaDb();
+    await importarArchivo(await exportarZip(d), otro);
+    await new Promise((ok) => setTimeout(ok, 1100));
+    await d.repo.eliminarVarios([r.id]);
+    await importarArchivo(await exportarZip(d), otro);
+    expect(await otro.repo.listar()).toHaveLength(0);
+  });
+
   it('avisa a los suscriptores', async () => {
     const d = nuevaDb();
     let avisos = 0;

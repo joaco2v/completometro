@@ -95,6 +95,41 @@ export class LocalRepository implements RegistroRepository, Outbox {
     this.avisar();
   }
 
+  /**
+   * Cambia el estado de borrado de varios registros en una sola transacción.
+   * `eliminar = true` los manda a la papelera; `false` los restaura. Devuelve cuántos cambiaron.
+   */
+  private async marcarVarios(ids: readonly string[], eliminar: boolean): Promise<number> {
+    if (!ids.length) return 0;
+    const ahora = this.ahora();
+    const db = await this.o.db();
+    const tx = db.transaction(['registros', 'outbox'], 'readwrite');
+    const store = tx.objectStore('registros');
+    let cambiados = 0;
+    for (const id of new Set(ids)) {
+      const r = await store.get(id);
+      if (!r || !!r.eliminado_en === eliminar) continue;
+      await store.put({ ...r, eliminado_en: eliminar ? ahora : null, actualizado_en: ahora, estado_sync: 'pendiente' });
+      await tx.objectStore('outbox').add({ entidad: 'registro', entidad_id: id, operacion: eliminar ? 'eliminar' : 'actualizar', fecha: ahora });
+      cambiados++;
+    }
+    await tx.done;
+    if (cambiados) {
+      await this.o.alEscribir?.();
+      this.avisar();
+    }
+    return cambiados;
+  }
+
+  eliminarVarios(ids: readonly string[]) {
+    return this.marcarVarios(ids, true);
+  }
+
+  /** Saca registros de la papelera (deshace un borrado). Al ser un cambio más nuevo, también viaja a Drive. */
+  restaurar(ids: readonly string[]) {
+    return this.marcarVarios(ids, false);
+  }
+
   async fusionar(entrantes: Registro[]): Promise<ResultadoFusion> {
     const db = await this.o.db();
     const tx = db.transaction(['registros', 'outbox'], 'readwrite');

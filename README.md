@@ -68,6 +68,10 @@ Primero abre este link en el teléfono: **https://joaco2v.github.io/completometr
 - Toca **"¡Me comí un completo!"** cada vez. Si se te olvidó registrar uno, usa
   **"Cambiar (me olvidé de anotarlo)"** para ponerle la fecha y hora reales.
 - La primera vez, el teléfono pedirá permiso de **ubicación**. Si lo niegas, puedes marcar el lugar en el mapa.
+- En el **Historial** cada registro tiene ✏️ para editarlo y 🗑️ para eliminarlo. Con **☑️ Seleccionar**
+  puedes marcar varios (o un mes completo) y eliminarlos de una vez. Lo eliminado queda en
+  **Eliminados**, al final del historial, por si te arrepientes.
+- Para empezar de cero: **Ajustes › Eliminar todos los registros** (te pide escribir BORRAR para confirmar).
 
 ### Respaldo (Ultra importante)
 

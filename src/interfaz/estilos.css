@@ -224,6 +224,26 @@ textarea { resize: vertical; }
 .item-notas { font-size: 0.85rem; font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pastilla { display: inline-block; background: var(--superficie-2); color: var(--texto); border-radius: 999px; padding: 1px 8px; font-size: 0.78rem; font-weight: 700; }
 
+.item-acciones { display: flex; flex-direction: column; gap: 2px; flex: none; }
+.item-registro.marcado { border-color: var(--rojo); background: color-mix(in srgb, var(--rojo) 8%, var(--superficie)); }
+.casilla { width: 26px; height: 26px; flex: none; border-radius: 8px; border: 2px solid var(--borde); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; }
+.casilla.activa { background: var(--rojo); border-color: var(--rojo); }
+.marcar-mes { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.marcar-mes input { width: 20px; height: 20px; accent-color: var(--rojo); }
+.marcar-mes span { text-transform: capitalize; }
+.barra-seleccion { position: fixed; left: 0; right: 0; bottom: calc(var(--alto-pestanas) + env(safe-area-inset-bottom)); z-index: 9;
+  display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--superficie); border-top: 1px solid var(--borde); box-shadow: 0 -4px 14px rgba(0,0,0,0.08); }
+.barra-seleccion > span { flex: 1; }
+.con-barra-seleccion { padding-bottom: 70px; }
+.boton-peligro { background: var(--rojo); border-color: var(--rojo); color: #fff; }
+.banner-deshacer { align-items: center; justify-content: space-between; border-color: var(--pan); }
+.papelera .lista-simple { margin-top: 8px; }
+.zona-peligro { border-color: color-mix(in srgb, var(--rojo) 45%, var(--borde)); }
+.zona-peligro h3 { color: var(--rojo); }
+.confirmar-texto { text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.campo-check { display: flex; gap: 10px; align-items: flex-start; font-size: 0.92rem; }
+.campo-check input { width: 20px; height: 20px; flex: none; margin-top: 2px; accent-color: var(--rojo); }
+
 /* ---------- Ajustes ---------- */
 .fila-input { display: flex; gap: 8px; }
 .fila-input input { flex: 1; }

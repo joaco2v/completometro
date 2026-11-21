@@ -30,8 +30,12 @@ export interface RegistroRepository {
   obtener(id: string): Promise<Registro | undefined>;
   crear(datos: DatosRegistro): Promise<Registro>;
   actualizar(id: string, cambios: Partial<DatosRegistro>): Promise<Registro>;
-  /** Borrado lógico: marca eliminado_en. */
+  /** Borrado lógico: marca eliminado_en (queda en la papelera). */
   eliminar(id: string): Promise<void>;
+  /** Borrado lógico de varios en una sola operación. Devuelve cuántos se eliminaron. */
+  eliminarVarios(ids: readonly string[]): Promise<number>;
+  /** Saca de la papelera (quita eliminado_en). Devuelve cuántos se restauraron. */
+  restaurar(ids: readonly string[]): Promise<number>;
   /**
    * Integra registros que vienen de afuera (importación o servidor) usando
    * "gana el último cambio" (actualizado_en). Evita duplicados por id.
