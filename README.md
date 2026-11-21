@@ -24,15 +24,43 @@ gratis, sin tiendas de apps, sin cuentas y **sin internet**. Tus datos se quedan
 
 Más capturas (con datos ficticios): [docs/CAPTURAS.md](docs/CAPTURAS.md).
 
-## 📲 Instalar la app (usuario)
+## 📲 Deja la app en tu pantalla de inicio
 
-1. Abre el link de la app en el teléfono.
-2. **Android (Chrome)**: menú **⋮** › **Instalar app** (o "Agregar a pantalla principal").
-   **iPhone (Safari)**: botón **Compartir** ↑ › **Agregar a pantalla de inicio**.
-3. Listo: aparece el ícono 🌭 y funciona sin internet.
+Es como tener una app más, pero sin pasar por la tienda de apps. Toma menos de un minuto.
+Primero abre este link en el teléfono: **https://joaco2v.github.io/completometro/**
 
-> En iPhone conviene instalarla: Safari puede borrar datos de páginas que no están instaladas
-> y no se abren en una semana.
+### Con Chrome en Android
+
+1. Abre el link en **Chrome**.
+2. Toca los **tres puntitos ⋮** que están arriba a la derecha.
+3. Busca **"Agregar a la pantalla principal"** (en algunos teléfonos dice **"Instalar app"**) y tócalo.
+4. Dale a **"Instalar"** o **"Agregar"**.
+5. ¡Y listo! 🎉 Te queda el ícono del completo junto a tus otras apps.
+
+### Con Chrome en iPhone
+
+1. Abre el link en **Chrome**.
+2. Toca el botón de **compartir** (el cuadradito con la flechita hacia arriba ⬆️), en la barra de la dirección, arriba a la derecha.
+3. Baja un poco en el menú y toca **"Agregar a pantalla de inicio"**.
+4. Toca **"Agregar"**, arriba a la derecha. ¡Listo! 🎉
+
+¿No te aparece la opción? Actualiza tu iPhone o hazlo desde Safari.
+
+### Con Safari en iPhone
+
+1. Abre el link en **Safari** (la brújula azul 🧭).
+2. Toca el botón de **compartir** (el cuadradito con la flechita hacia arriba ⬆️), abajo al medio.
+   Si no lo ves, toca los **tres puntitos ···** de abajo y ahí aparece "Compartir".
+3. Desliza hacia abajo y toca **"Agregar a pantalla de inicio"**.
+4. Si aparece **"Abrir como app web"**, déjalo activado. Después toca **"Agregar"**. ¡Listo! 🎉
+
+> 💡 **Importante:** desde ahora ábrela siempre desde el ícono 🌭 y no desde el navegador.
+> En el iPhone, la app instalada y el navegador guardan los datos por separado, así que lo que
+> anotes en uno no aparece en el otro. Si ya tenías completos anotados en el navegador, respáldalos
+> antes y luego impórtalos (o conecta Google Drive) en la app instalada.
+> Además, Safari puede borrar los datos de páginas que no están instaladas y que no abres en una semana.
+>
+> ¿Usas otro navegador (Samsung Internet, Firefox, Edge…)? Copia el link y ábrelo en Chrome o Safari.
 
 ### Primeros pasos
 

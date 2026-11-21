@@ -238,6 +238,12 @@ textarea { resize: vertical; }
 .lista-simple li { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--borde); gap: 8px; }
 .lista-simple li:last-child { border-bottom: none; }
 .pasos ol { padding-left: 20px; }
+.pasos > p { margin: 0 0 8px; }
+.selector-guia { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: var(--superficie-2); padding: 4px; border-radius: 14px; margin: 10px 0; }
+.selector-guia button { border: none; background: transparent; padding: 8px 4px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; line-height: 1.2; }
+.selector-guia button[aria-selected='true'] { background: var(--superficie); box-shadow: var(--sombra); color: var(--rojo); }
+.pasos-lista li { margin-bottom: 8px; line-height: 1.4; }
+.nota-instalar { background: var(--superficie-2); border-left: 4px solid var(--pan); border-radius: 10px; padding: 10px 12px; font-size: 0.9rem; margin: 8px 0; }
 .acerca-cabecera { display: flex; gap: 12px; align-items: center; }
 .acerca-cabecera img { border-radius: 14px; flex: none; }
 .acerca-cabecera h3 { margin: 0; }

@@ -187,7 +187,7 @@ export function Ajustes({ seccion }: { seccion: string | null }) {
       </section>
 
       <section class="tarjeta" id="instalar">
-        <h3>📲 Instalar la app</h3>
+        <h3>📲 Deja la app en tu pantalla de inicio</h3>
         <PasosInstalar />
       </section>
 
