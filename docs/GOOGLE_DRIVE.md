@@ -57,6 +57,26 @@ Luego **Actions** › **Publicar en GitHub Pages** › **Run workflow** (o haz c
 **En tu computador**: crea `.env` con `VITE_GOOGLE_CLIENT_ID=<id>` y usa `npm run dev`.
 El archivo `.env` está en `.gitignore`, así que nunca se sube a GitHub.
 
+## 5. Pasar de "Prueba" a "Producción" (para que cualquiera pueda conectarse)
+
+En modo Prueba solo entran las cuentas agregadas como usuarios de prueba (hasta 100).
+
+1. En Google Cloud › **Google Auth Platform** › **Desarrollo de la marca** (o "Pantalla de consentimiento"), completa:
+   - **Página principal de la app:** `https://<tu-usuario>.github.io/completometro/`
+   - **Política de privacidad:** `https://<tu-usuario>.github.io/completometro/privacidad.html`
+   - **Dominios autorizados:** `<tu-usuario>.github.io`
+   - Correo de contacto del desarrollador.
+2. **Público** › **Publicar app** › **Confirmar**. El estado cambia a **"En producción"**.
+
+Como la app solo pide permisos **no sensibles** (`drive.appdata` y `userinfo.email`), Google no exige
+la revisión de seguridad ni pone límite de usuarios. Cualquiera con cuenta de Google puede conectarse.
+
+**Opcional, verificar la marca:** mientras no esté verificada, la ventana de Google muestra el dominio
+(`<tu-usuario>.github.io`) en vez de "Completómetro" y sin logo. Para mostrar el nombre y el logo hay que
+**verificar la marca**: Google revisa el nombre, el logo, los enlaces y que seas dueño del dominio (se
+verifica en [Google Search Console](https://search.google.com/search-console)). Es gratis y suele tardar
+unos días hábiles. Si cambias el nombre o el logo después, hay que volver a verificar.
+
 ## Cómo funciona (resumen técnico)
 
 - Inicio de sesión con Google Identity Services (modelo de token, todo en el navegador, sin servidor).
