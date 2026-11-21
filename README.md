@@ -11,6 +11,15 @@ gratis, sin tiendas de apps, sin cuentas y **sin internet**. Tus datos se quedan
 - **Resumen del año** para compartir en historias de Instagram (banner desde el 31 de diciembre).
 - Exporta a **CSV/ZIP para Power BI o Excel** y respalda en Drive, iCloud, WhatsApp o correo.
 
+<p align="center">
+  <img src="docs/capturas/01-inicio.jpg" width="200" alt="Inicio">
+  <img src="docs/capturas/04-en-casa-y-hambre.jpg" width="200" alt="Registrar un completo">
+  <img src="docs/capturas/06-dashboard.jpg" width="200" alt="Dashboard">
+  <img src="docs/capturas/10-imagen-historias.jpg" width="200" alt="Imagen del resumen anual">
+</p>
+
+Más capturas (con datos ficticios): [docs/CAPTURAS.md](docs/CAPTURAS.md).
+
 ## 📲 Instalar la app (usuario)
 
 1. Abre el link de la app en el teléfono.
