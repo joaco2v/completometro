@@ -57,6 +57,8 @@ como un cambio más. El servidor debe aplicar la misma regla. Implementación: `
   "tipo_lugar": "local",
   "nombre_local": "La Esquina del Completo",
   "puntuacion": 8,
+  "preparado_por": null,
+  "preparado_por_nombre": null,
   "emocion": "feliz",
   "hambre": 4,
   "latitud": -33.4372,
@@ -71,7 +73,7 @@ como un cambio más. El servidor debe aplicar la misma regla. Implementación: `
   "eliminado_en": null,
   "dispositivo_id": "3f0a…",
   "estado_sync": "pendiente",
-  "version_esquema": 1
+  "version_esquema": 2
 }
 ```
 
@@ -81,7 +83,9 @@ como un cambio más. El servidor debe aplicar la misma regla. Implementación: `
 | `fecha_hora` | ISO 8601 | Cuándo se comió (puede ser anterior a `creado_en` si se registró atrasado). |
 | `cantidad` | entero ≥ 1 | |
 | `tipo_lugar` | `local` \| `otro` | |
-| `nombre_local`, `puntuacion` | texto, 1–10 | Solo si `tipo_lugar = local`. |
+| `nombre_local` | texto | Solo si `tipo_lugar = local`. |
+| `puntuacion` | 1–10 | Nota del completo (cualquier lugar). |
+| `preparado_por`, `preparado_por_nombre` | `yo` \| `otra_persona`, texto | Solo si `tipo_lugar = otro`. Desde el esquema v2. |
 | `emocion` | texto | Id de emoción (base o personalizada `p_…`). Es una **etiqueta**, no una escala. |
 | `hambre` | 1–5 | Espectro: 1 = nada … 5 = me comería toda la olla. |
 | `latitud`, `longitud`, `precision_gps_m` | número | `origen_coordenadas`: `gps` \| `foto_exif` \| `manual`. |

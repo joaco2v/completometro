@@ -11,6 +11,7 @@ import { useEstado } from '../estado';
 import { aInputFecha, entero, fechaRelativa } from '../formato';
 import { Modal } from './Modal';
 import { SelectorMapa } from './SelectorMapa';
+import { BuscadorLocal } from './BuscadorLocal';
 import { useUrlFoto } from './Foto';
 
 type EstadoUbicacion = { tipo: 'buscando' } | { tipo: 'lista' } | { tipo: 'error'; error: ErrorUbicacion } | { tipo: 'nada' };
@@ -26,6 +27,8 @@ export function FormularioRegistro({ registro, alCerrar }: { registro?: Registro
   const [quitarFoto, setQuitarFoto] = useState(false);
   const [procesandoFoto, setProcesandoFoto] = useState(false);
   const [verMapa, setVerMapa] = useState(false);
+  /** La ubicación vino de un local sugerido (OpenStreetMap). */
+  const [desdeLocal, setDesdeLocal] = useState(false);
   const [cambiarFecha, setCambiarFecha] = useState(false);
   const [verNotas, setVerNotas] = useState(!!registro?.notas);
   const [nuevaEmocion, setNuevaEmocion] = useState<{ emoji: string; nombre: string } | null>(null);
@@ -157,35 +160,53 @@ export function FormularioRegistro({ registro, alCerrar }: { registro?: Registro
           <legend class="etiqueta">¿Dónde?</legend>
           <div class="segmentado">
             <button type="button" aria-pressed={esLocal} onClick={() => set({ tipo_lugar: 'local' })}>🏪 Local establecido</button>
-            <button type="button" aria-pressed={!esLocal} onClick={() => set({ tipo_lugar: 'otro' })}>🏠 Otro lugar</button>
+            <button type="button" aria-pressed={!esLocal} onClick={() => set({ tipo_lugar: 'otro' })}>🏠 En casa u otro lugar</button>
           </div>
         </fieldset>
 
-        {esLocal && (
-          <>
-            <label class="campo">
-              <span class="etiqueta">Nombre del local</span>
+        {esLocal ? (
+          <div class="campo">
+            <label class="etiqueta" for="nombre-local">Nombre del local</label>
+            <BuscadorLocal
+              valor={d.nombre_local ?? ''}
+              conocidos={sugerencias}
+              cerca={d.latitud != null && d.longitud != null ? { latitud: d.latitud, longitud: d.longitud } : null}
+              alEscribir={(nombre) => set({ nombre_local: nombre })}
+              alElegirLugar={(l) => {
+                set({ nombre_local: l.nombre, latitud: l.latitud, longitud: l.longitud, precision_gps_m: null, origen_coordenadas: 'manual' });
+                setDesdeLocal(true);
+                setUbic({ tipo: 'lista' });
+              }}
+            />
+          </div>
+        ) : (
+          <fieldset class="campo">
+            <legend class="etiqueta">¿Quién lo preparó? <small>(opcional)</small></legend>
+            <div class="segmentado">
+              <button type="button" aria-pressed={d.preparado_por === 'yo'} onClick={() => set({ preparado_por: d.preparado_por === 'yo' ? null : 'yo' })}>🙋 Yo</button>
+              <button type="button" aria-pressed={d.preparado_por === 'otra_persona'} onClick={() => set({ preparado_por: d.preparado_por === 'otra_persona' ? null : 'otra_persona' })}>🧑‍🍳 Otra persona</button>
+            </div>
+            {d.preparado_por === 'otra_persona' && (
               <input
                 type="text"
-                list="locales-conocidos"
-                value={d.nombre_local ?? ''}
-                onInput={(e) => set({ nombre_local: e.currentTarget.value })}
-                placeholder="Ej: Fuente Alemana"
-                autocomplete="off"
-                maxLength={80}
+                value={d.preparado_por_nombre ?? ''}
+                onInput={(e) => set({ preparado_por_nombre: e.currentTarget.value })}
+                placeholder="¿Quién? (opcional) Ej: mi mamá"
+                aria-label="Nombre de quien lo preparó"
+                maxLength={60}
               />
-              <datalist id="locales-conocidos">{sugerencias.map((s) => <option value={s} key={s} />)}</datalist>
-            </label>
-            <fieldset class="campo">
-              <legend class="etiqueta">Nota del local {d.puntuacion != null && <strong>{d.puntuacion}/10</strong>}</legend>
-              <div class="chips chips-nota">
-                {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
-                  <button type="button" key={n} class="chip" aria-pressed={d.puntuacion === n} onClick={() => set({ puntuacion: d.puntuacion === n ? null : n })}>{n}</button>
-                ))}
-              </div>
-            </fieldset>
-          </>
+            )}
+          </fieldset>
         )}
+
+        <fieldset class="campo">
+          <legend class="etiqueta">Nota del completo {d.puntuacion != null && <strong>{d.puntuacion}/10</strong>}</legend>
+          <div class="chips chips-nota">
+            {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+              <button type="button" key={n} class="chip" aria-pressed={d.puntuacion === n} onClick={() => set({ puntuacion: d.puntuacion === n ? null : n })}>{n}</button>
+            ))}
+          </div>
+        </fieldset>
 
         <fieldset class="campo">
           <legend class="etiqueta">¿Cómo te sientes?</legend>
@@ -216,10 +237,11 @@ export function FormularioRegistro({ registro, alCerrar }: { registro?: Registro
             {NIVELES_HAMBRE.map((h) => (
               <button type="button" key={h.nivel} aria-pressed={d.hambre === h.nivel} title={h.nombre} aria-label={h.nombre} onClick={() => set({ hambre: d.hambre === h.nivel ? null : h.nivel })}>
                 <span class="emoji-grande" aria-hidden="true">{h.emoji}</span>
+                <span class="hambre-texto" aria-hidden="true">{h.corto}</span>
               </button>
             ))}
           </div>
-          <p class="ayuda centrado">{d.hambre ? NIVELES_HAMBRE[d.hambre - 1].nombre : 'De "nada" a "me comería toda la olla"'}</p>
+          {d.hambre === 5 && <p class="ayuda centrado">🍲 ¡Me comería toda la olla!</p>}
         </fieldset>
 
         <div class="campo">
@@ -243,7 +265,7 @@ export function FormularioRegistro({ registro, alCerrar }: { registro?: Registro
             {ubic.tipo === 'buscando' && <span>📡 Buscando ubicación…</span>}
             {ubic.tipo === 'lista' && d.latitud != null && (
               <span>
-                📍 {d.origen_coordenadas === 'foto_exif' ? 'Desde la foto' : d.origen_coordenadas === 'manual' ? 'Marcada en el mapa' : 'GPS'}
+                📍 {d.origen_coordenadas === 'foto_exif' ? 'Desde la foto' : d.origen_coordenadas === 'manual' ? (desdeLocal ? 'Ubicación del local' : 'Marcada en el mapa') : 'GPS'}
                 {d.precision_gps_m != null && <small> (±{entero(d.precision_gps_m)} m)</small>}
               </span>
             )}
@@ -299,7 +321,7 @@ export function FormularioRegistro({ registro, alCerrar }: { registro?: Registro
       {verMapa && (
         <SelectorMapa
           inicial={d.latitud != null && d.longitud != null ? { latitud: d.latitud, longitud: d.longitud } : null}
-          alElegir={(lat, lon) => { set({ latitud: lat, longitud: lon, precision_gps_m: null, origen_coordenadas: 'manual' }); setUbic({ tipo: 'lista' }); }}
+          alElegir={(lat, lon) => { setDesdeLocal(false); set({ latitud: lat, longitud: lon, precision_gps_m: null, origen_coordenadas: 'manual' }); setUbic({ tipo: 'lista' }); }}
           alCerrar={() => setVerMapa(false)}
         />
       )}

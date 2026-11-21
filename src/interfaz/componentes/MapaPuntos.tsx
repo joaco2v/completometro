@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'preact/hooks';
-import type { Registro } from '../../dominio/modelo';
+import { describirLugar, type Registro } from '../../dominio/modelo';
 import { fechaRelativa } from '../formato';
 import { CENTRO_POR_DEFECTO, crearMapa, L } from './leaflet';
 
@@ -15,7 +15,7 @@ export function MapaPuntos({ registros }: { registros: Registro[] }) {
     const mapa = crearMapa(ref.current, CENTRO_POR_DEFECTO, 11);
     const color = getComputedStyle(document.documentElement).getPropertyValue('--rojo').trim() || '#c8102e';
     const puntos = conUbicacion.map((r) => {
-      const lugar = r.nombre_local ?? (r.tipo_lugar === 'local' ? 'Local' : 'Otro lugar');
+      const lugar = describirLugar(r);
       return L.circleMarker([r.latitud!, r.longitud!], {
         radius: 6 + Math.min(6, r.cantidad - 1) * 2,
         color: '#fff',

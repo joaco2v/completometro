@@ -2,7 +2,7 @@ import { useMemo, useState } from 'preact/hooks';
 import { resumenRapido } from '../../dominio/metricas';
 import { buscarEmocion, nivelHambre } from '../../dominio/emociones';
 import { anioDelBannerAnual, debeAvisarRespaldo, RESPALDO } from '../../dominio/ajustes';
-import { aIsoLocal } from '../../dominio/modelo';
+import { aIsoLocal, describirLugar } from '../../dominio/modelo';
 import { sumarDias } from '../../dominio/fechas';
 import { datos } from '../../datos';
 import { useEstado } from '../estado';
@@ -110,7 +110,7 @@ export function Inicio() {
             <span>
               <small>Último completo</small>
               <br />
-              <strong>{r.ultimo.nombre_local ?? (r.ultimo.tipo_lugar === 'local' ? 'Local' : 'Otro lugar')}</strong>
+              <strong>{describirLugar(r.ultimo)}</strong>
               {r.ultimo.cantidad > 1 && ` · ${r.ultimo.cantidad} completos`}
               {' · '}
               <span class="ayuda">{fechaRelativa(r.ultimo.fecha_hora, ahora)}</span>

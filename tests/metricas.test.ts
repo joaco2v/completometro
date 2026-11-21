@@ -6,7 +6,7 @@ import {
 } from '../src/dominio/metricas';
 import { calcularAcumulados } from '../src/dominio/acumulado';
 import { resolverConflicto } from '../src/dominio/conflictos';
-import { normalizarDatos, registroVacio } from '../src/dominio/modelo';
+import { migrarRegistro, normalizarDatos, registroVacio } from '../src/dominio/modelo';
 
 // Sábado 21 de noviembre de 2026, 15:00 hora local
 const AHORA = new Date(2026, 10, 21, 15, 0);
@@ -171,10 +171,26 @@ describe('locales', () => {
 });
 
 describe('modelo y conflictos', () => {
-  it('normaliza: puntuación y nombre solo para locales', () => {
-    const n = normalizarDatos({ ...registroVacio(AHORA), tipo_lugar: 'otro', nombre_local: 'X', puntuacion: 9 });
+  it('normaliza: nombre de local solo en locales; la nota vale en cualquier lugar', () => {
+    const n = normalizarDatos({ ...registroVacio(AHORA), tipo_lugar: 'otro', nombre_local: 'X', puntuacion: 9, preparado_por: 'otra_persona', preparado_por_nombre: '  mi  mamá ' });
     expect(n.nombre_local).toBeNull();
-    expect(n.puntuacion).toBeNull();
+    expect(n.puntuacion).toBe(9);
+    expect(n.preparado_por_nombre).toBe('mi mamá');
+  });
+
+  it('"quién lo preparó" solo aplica fuera de locales', () => {
+    const n = normalizarDatos({ ...registroVacio(AHORA), tipo_lugar: 'local', preparado_por: 'yo' });
+    expect(n.preparado_por).toBeNull();
+    const yo = normalizarDatos({ ...registroVacio(AHORA), tipo_lugar: 'otro', preparado_por: 'yo', preparado_por_nombre: 'X' });
+    expect(yo.preparado_por_nombre).toBeNull();
+  });
+
+  it('migra registros v1 sin tocar actualizado_en', () => {
+    const viejo = { ...reg(d(1, 1)), version_esquema: 1 } as Record<string, unknown>;
+    delete viejo.preparado_por;
+    delete viejo.preparado_por_nombre;
+    const m = migrarRegistro(viejo as never);
+    expect(m).toMatchObject({ preparado_por: null, preparado_por_nombre: null, version_esquema: 2, actualizado_en: viejo.actualizado_en });
   });
 
   it('rechaza puntuación fuera de 1–10', () => {

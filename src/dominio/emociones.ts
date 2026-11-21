@@ -28,14 +28,16 @@ export interface NivelHambre {
   nivel: number;
   emoji: string;
   nombre: string;
+  /** Etiqueta corta que va bajo el emoji. */
+  corto: string;
 }
 
 export const NIVELES_HAMBRE: readonly NivelHambre[] = [
-  { nivel: 1, emoji: '🙂', nombre: 'Nada, por puro gusto' },
-  { nivel: 2, emoji: '😋', nombre: 'Un poquito' },
-  { nivel: 3, emoji: '🍽️', nombre: 'Con hambre' },
-  { nivel: 4, emoji: '😩', nombre: 'Mucha hambre' },
-  { nivel: 5, emoji: '🍲', nombre: 'Me comería toda la olla' },
+  { nivel: 1, emoji: '🙂', nombre: 'Nada, por puro gusto', corto: 'Nada' },
+  { nivel: 2, emoji: '😋', nombre: 'Un poquito', corto: 'Un poco' },
+  { nivel: 3, emoji: '🍽️', nombre: 'Con hambre', corto: 'Con hambre' },
+  { nivel: 4, emoji: '😩', nombre: 'Mucha hambre', corto: 'Mucha' },
+  { nivel: 5, emoji: '🍲', nombre: 'Me comería toda la olla', corto: 'Toda la olla' },
 ];
 
 export function nivelHambre(nivel: number | null | undefined): NivelHambre | undefined {

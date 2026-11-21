@@ -3,7 +3,7 @@ import { calcularAcumulados } from '../../dominio/acumulado';
 import { buscarEmocion, nivelHambre } from '../../dominio/emociones';
 import { claveMes, nombreMes } from '../../dominio/fechas';
 import { claveLocal } from '../../dominio/metricas';
-import type { Registro, RegistroConAcumulado } from '../../dominio/modelo';
+import { describirLugar, type Registro, type RegistroConAcumulado } from '../../dominio/modelo';
 import { datos } from '../../datos';
 import { useEstado } from '../estado';
 import { entero, fechaRelativa } from '../formato';
@@ -62,7 +62,7 @@ export function Historial() {
                       <span class="item-texto">
                         <span class="item-titulo">
                           <span class="numero">#{entero(r.numero_acumulado_anio)}</span>
-                          {r.nombre_local ?? (r.tipo_lugar === 'local' ? 'Local' : 'Otro lugar')}
+                          {describirLugar(r)}
                           {r.cantidad > 1 && <span class="pastilla">×{r.cantidad}</span>}
                         </span>
                         <span class="item-detalle">

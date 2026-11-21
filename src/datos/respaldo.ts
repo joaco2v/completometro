@@ -10,7 +10,7 @@
  */
 import { calcularAcumulados } from '../dominio/acumulado';
 import { resolverConflicto } from '../dominio/conflictos';
-import { aIsoLocal, VERSION_ESQUEMA, type Registro } from '../dominio/modelo';
+import { aIsoLocal, migrarRegistro, VERSION_ESQUEMA, type Registro } from '../dominio/modelo';
 import type { Emocion } from '../dominio/emociones';
 import type { ContadoresIniciales } from '../dominio/acumulado';
 import { claveDia } from '../dominio/fechas';
@@ -146,7 +146,7 @@ export function validarRespaldo(x: unknown): ArchivoRespaldo {
   const validos = r.registros.filter((g) => g && typeof g.id === 'string' && typeof g.fecha_hora === 'string' && typeof g.actualizado_en === 'string');
   return {
     ...(r as ArchivoRespaldo),
-    registros: validos.map((g) => ({ ...g, cantidad: Number(g.cantidad) || 1 })),
+    registros: validos.map((g) => migrarRegistro({ ...g, cantidad: Number(g.cantidad) || 1 })),
     fotos: Array.isArray(r.fotos) ? r.fotos : [],
     ajustes: { contadoresIniciales: r.ajustes?.contadoresIniciales ?? {}, emocionesPersonalizadas: r.ajustes?.emocionesPersonalizadas ?? [] },
   };

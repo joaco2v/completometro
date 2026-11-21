@@ -3,8 +3,9 @@
 Lleva la cuenta de todos los completos que te comes en el año. Una app web instalable (PWA):
 gratis, sin tiendas de apps, sin cuentas y **sin internet**. Tus datos se quedan en tu teléfono.
 
-- Registrar un completo toma segundos: cantidad, local y nota (1–10), emoción, nivel de hambre
-  (de "nada" a "me comería toda la olla"), foto y ubicación automática.
+- Registrar un completo toma segundos: cantidad, dónde (local o en casa, y quién lo preparó), nota
+  del completo (1–10), emoción, nivel de hambre (de "nada" a "me comería toda la olla"), foto y
+  ubicación automática. Al escribir el local, sugiere locales cercanos de OpenStreetMap.
 - Resumen al abrir: total del año, hoy/semana/mes, promedio semanal, racha y emociones del mes.
 - Dashboard: gráficos por semana o por mes, mapa de tus completos, ranking de locales y emociones.
 - **Resumen del año** para compartir en historias de Instagram (banner desde el 31 de diciembre).
@@ -56,8 +57,10 @@ Para probar sin datos reales: [ejemplos/completos_ejemplo.csv](ejemplos/completo
 | `fecha`, `hora`, `anio`, `mes`, `semana_inicio` | Para agrupar fácil (semana = lunes) |
 | `numero_acumulado_anio` | N° de completo del año (incluye el contador inicial) |
 | `cantidad` | Completos en ese registro |
-| `tipo_lugar` | "Local establecido" / "Otro lugar" |
-| `nombre_local`, `puntuacion` | Solo locales; nota de 1 a 10 |
+| `tipo_lugar` | "Local establecido" / "En casa u otro lugar" |
+| `nombre_local` | Solo locales |
+| `puntuacion` | Nota del completo, de 1 a 10 (en cualquier lugar) |
+| `preparado_por`, `preparado_por_nombre` | Solo en casa u otro lugar: "Yo" / "Otra persona" y su nombre (opcional) |
 | `emocion`, `emocion_emoji` | Emoción (etiqueta, sin valor numérico) |
 | `hambre_nivel`, `hambre_texto` | 1 = nada … 5 = me comería toda la olla |
 | `latitud`, `longitud`, `precision_gps_m`, `origen_coordenadas` | `gps`, `foto_exif` o `manual` |
@@ -118,7 +121,26 @@ src/
 - Configuración por `.env` (`VITE_MODO=local|remoto`, `VITE_BACKEND_URL`). Sin `.env`, 100 % local.
 - Contrato de API para el backend futuro: [docs/BACKEND.md](docs/BACKEND.md).
 
+## Cómo nació
+
+En 2025, un amigo usó un grupo de WhatsApp consigo mismo para anotar cada completo que se comía, y a
+fin de año publicó el total. Le copié la idea y empecé a hacer lo mismo. Se lo conté a Valentina, una
+amiga, y me dijo que podía agregarle métricas e insights para tener un análisis muy bacán. De ahí salió
+el Completómetro. ¡Gracias, Vabe! 💛
+
+## ¿Quieres apoyar?
+
+Es un proyecto personal que hago por hobby. Si quieres ayudar con el desarrollo o el mantenimiento,
+proponer una idea o reportar un problema, abre un [issue](https://github.com/joaco2v/completometro/issues)
+o escríbeme por [GitHub](https://github.com/joaco2v). Los pull requests son bienvenidos.
+
+## Licencia
+
+[MIT](LICENSE): puedes usar, copiar, modificar y compartir el código libremente, manteniendo el aviso
+de licencia y el crédito.
+
 ## Privacidad
 
-Sin servidores, sin analítica, sin publicidad. Lo único que se descarga de internet son los mapas
-de OpenStreetMap. Tus datos salen del teléfono solo cuando tú exportas o respaldas.
+Sin servidores propios, sin analítica, sin publicidad. De internet solo se usan los mapas de
+OpenStreetMap, las sugerencias de locales (se envía lo que escribes en "Nombre del local" y una
+ubicación aproximada al servicio Photon de OpenStreetMap) y, si lo conectas, tu Google Drive. Tus datos salen del teléfono solo cuando tú exportas o respaldas.

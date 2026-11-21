@@ -4,10 +4,13 @@
  */
 
 /** Versión actual del esquema de un registro. Súbela cuando cambie la forma de los datos. */
-export const VERSION_ESQUEMA = 1;
+// v2: la nota (puntuacion) es del completo y vale para cualquier lugar; se agrega preparado_por.
+export const VERSION_ESQUEMA = 2;
 
 export type TipoLugar = 'local' | 'otro';
 export type OrigenCoordenadas = 'gps' | 'foto_exif' | 'manual';
+/** Quién preparó el completo (solo cuando fue en casa u otro lugar). */
+export type PreparadoPor = 'yo' | 'otra_persona';
 export type EstadoSync = 'pendiente' | 'sincronizado';
 
 /** Lo que el usuario llena (o la app completa sola) al registrar un completo. */
@@ -19,8 +22,12 @@ export interface DatosRegistro {
   tipo_lugar: TipoLugar;
   /** Solo si tipo_lugar === 'local'. */
   nombre_local: string | null;
-  /** 1 a 10, solo si tipo_lugar === 'local'. */
+  /** Nota del completo, de 1 a 10 (en cualquier lugar). */
   puntuacion: number | null;
+  /** Solo si tipo_lugar === 'otro'. */
+  preparado_por: PreparadoPor | null;
+  /** Nombre de quien lo preparó (opcional, solo si preparado_por === 'otra_persona'). */
+  preparado_por_nombre: string | null;
   /** id de una emoción predefinida o personalizada (ver emociones.ts). Es una etiqueta, no una escala. */
   emocion: string | null;
   /** Nivel de hambre de 1 (nada) a 5 (me comería toda la olla). */
@@ -58,6 +65,8 @@ export function registroVacio(ahora: Date = new Date()): DatosRegistro {
     tipo_lugar: 'local',
     nombre_local: null,
     puntuacion: null,
+    preparado_por: null,
+    preparado_por_nombre: null,
     emocion: null,
     hambre: null,
     latitud: null,
@@ -79,8 +88,10 @@ export function normalizarDatos(d: DatosRegistro): DatosRegistro {
 
   const esLocal = d.tipo_lugar === 'local';
   const nombre = esLocal ? (d.nombre_local ?? '').trim().replace(/\s+/g, ' ') : '';
-  let puntuacion = esLocal && d.puntuacion != null ? Math.round(d.puntuacion) : null;
-  if (puntuacion != null && (puntuacion < 1 || puntuacion > 10)) throw new Error('La puntuación va de 1 a 10.');
+  const puntuacion = d.puntuacion != null ? Math.round(d.puntuacion) : null;
+  if (puntuacion != null && (puntuacion < 1 || puntuacion > 10)) throw new Error('La nota va de 1 a 10.');
+  const preparado_por = !esLocal && (d.preparado_por === 'yo' || d.preparado_por === 'otra_persona') ? d.preparado_por : null;
+  const nombrePrep = preparado_por === 'otra_persona' ? (d.preparado_por_nombre ?? '').trim().replace(/\s+/g, ' ').slice(0, 60) : '';
   let hambre = d.hambre != null ? Math.round(d.hambre) : null;
   if (hambre != null && (hambre < 1 || hambre > 5)) hambre = null;
 
@@ -93,6 +104,8 @@ export function normalizarDatos(d: DatosRegistro): DatosRegistro {
     tipo_lugar: esLocal ? 'local' : 'otro',
     nombre_local: nombre || null,
     puntuacion,
+    preparado_por,
+    preparado_por_nombre: nombrePrep || null,
     emocion: d.emocion || null,
     hambre,
     latitud: tieneCoords ? d.latitud : null,
@@ -101,6 +114,29 @@ export function normalizarDatos(d: DatosRegistro): DatosRegistro {
     origen_coordenadas: tieneCoords ? d.origen_coordenadas ?? 'manual' : null,
     foto_id: d.foto_id || null,
     notas: d.notas?.trim() ? d.notas.trim() : null,
+  };
+}
+
+/** Texto corto del lugar: "Dominó", "Hecho por mí", "Hecho por mi mamá", "En casa u otro lugar". */
+export function describirLugar(r: Pick<DatosRegistro, 'tipo_lugar' | 'nombre_local' | 'preparado_por' | 'preparado_por_nombre'>): string {
+  if (r.tipo_lugar === 'local') return r.nombre_local ?? 'Local';
+  if (r.preparado_por === 'yo') return 'Hecho por mí';
+  if (r.preparado_por === 'otra_persona') return r.preparado_por_nombre ? `Hecho por ${r.preparado_por_nombre}` : 'Hecho por otra persona';
+  return 'En casa u otro lugar';
+}
+
+/**
+ * Lleva un registro de una versión anterior del esquema a la actual (rellena campos nuevos).
+ * Se usa en la migración de IndexedDB y al importar respaldos antiguos. No cambia actualizado_en.
+ */
+export function migrarRegistro(r: Registro): Registro {
+  const v = Number(r.version_esquema) || 1;
+  if (v >= VERSION_ESQUEMA) return r;
+  return {
+    ...r,
+    preparado_por: r.preparado_por ?? null,
+    preparado_por_nombre: r.preparado_por_nombre ?? null,
+    version_esquema: VERSION_ESQUEMA,
   };
 }
 

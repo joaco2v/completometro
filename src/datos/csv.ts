@@ -12,13 +12,14 @@ import { claveDia, claveSemana } from '../dominio/fechas';
 
 export const COLUMNAS_CSV = [
   'id', 'fecha_hora', 'fecha', 'hora', 'anio', 'mes', 'semana_inicio', 'numero_acumulado_anio', 'cantidad',
-  'tipo_lugar', 'nombre_local', 'puntuacion', 'emocion', 'emocion_emoji', 'hambre_nivel', 'hambre_texto',
+  'tipo_lugar', 'nombre_local', 'puntuacion', 'preparado_por', 'preparado_por_nombre', 'emocion', 'emocion_emoji', 'hambre_nivel', 'hambre_texto',
   'latitud', 'longitud', 'precision_gps_m', 'origen_coordenadas', 'foto_archivo', 'notas',
 ] as const;
 
 export const BOM = '﻿';
 
-const ETIQUETA_LUGAR = { local: 'Local establecido', otro: 'Otro lugar' } as const;
+const ETIQUETA_LUGAR = { local: 'Local establecido', otro: 'En casa u otro lugar' } as const;
+const ETIQUETA_PREPARADO = { yo: 'Yo', otra_persona: 'Otra persona' } as const;
 
 /** Escapa un valor según RFC 4180 y neutraliza fórmulas (=, +, -, @) en textos libres. */
 export function celda(v: unknown, textoLibre = false): string {
@@ -49,6 +50,8 @@ export function filaCsv(r: RegistroConAcumulado, personalizadas: readonly Emocio
     ETIQUETA_LUGAR[r.tipo_lugar],
     celda(r.nombre_local, true),
     numero(r.puntuacion),
+    r.preparado_por ? ETIQUETA_PREPARADO[r.preparado_por] : '',
+    celda(r.preparado_por_nombre, true),
     celda(emocion?.nombre, true),
     celda(emocion?.emoji),
     numero(r.hambre),

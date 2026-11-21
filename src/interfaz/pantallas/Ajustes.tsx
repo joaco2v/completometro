@@ -203,18 +203,37 @@ export function Ajustes({ seccion }: { seccion: string | null }) {
           Una app para llevar la cuenta de todos los completos que te comes en el año: dónde, cuántos,
           cómo te sentías y cuánta hambre tenías. Al final del año, tu resumen para compartir. 🌭
         </p>
+        <h4>¿Cómo nació?</h4>
+        <p>
+          En 2025, un amigo usó un grupo de WhatsApp consigo mismo para anotar cada completo que se comía,
+          y a fin de año publicó cuántos se había comido. Le copié la idea y empecé a hacer lo mismo.
+        </p>
+        <p>
+          Se lo conté a Valentina, una amiga, y me dijo que podía agregarle métricas e insights para tener
+          un análisis muy bacán de todos esos completos. De ahí salió el Completómetro.
+          <strong> ¡Gracias, Vabe! 💛</strong>
+        </p>
+
+        <h4>¿Quieres apoyar?</h4>
         <p class="ayuda">
-          Gratis, de código abierto y sin publicidad. Tus datos se guardan en tu teléfono y solo salen de ahí
-          cuando tú los exportas o respaldas.
+          Es un proyecto personal que hago por hobby. Si quieres ayudar con el desarrollo o el mantenimiento,
+          proponer una idea o avisar de un problema, contáctame por GitHub.
         </p>
         <div class="acerca-enlaces">
           <a class="boton" href={config.autor.github} target="_blank" rel="noopener noreferrer">
             👤 Hecho por {config.autor.nombre}
           </a>
+          <a class="boton" href={`${config.repositorio}/issues/new`} target="_blank" rel="noopener noreferrer">
+            💡 Proponer una idea
+          </a>
           <a class="boton" href={config.repositorio} target="_blank" rel="noopener noreferrer">
             💻 Código en GitHub
           </a>
         </div>
+        <p class="ayuda">
+          Gratis, sin publicidad y de código abierto (licencia MIT). Tus datos se guardan en tu teléfono y solo
+          salen de ahí cuando tú los exportas o respaldas.
+        </p>
         <details class="detalles-tecnicos">
           <summary>Datos técnicos</summary>
           <ul class="lista-simple">

@@ -6,7 +6,7 @@
  * que le faltan, así nadie pierde sus registros.
  */
 import { openDB, type DBSchema, type IDBPDatabase, type IDBPTransaction, type StoreNames } from 'idb';
-import type { Registro } from '../../dominio/modelo';
+import { migrarRegistro, type Registro } from '../../dominio/modelo';
 import type { CambioPendiente } from '../contratos';
 
 export interface FotoFila {
@@ -39,11 +39,14 @@ const MIGRACIONES: Migracion[] = [
     db.createObjectStore('outbox', { keyPath: 'seq', autoIncrement: true });
     db.createObjectStore('ajustes');
   },
-  // v2 (ejemplo futuro):
-  // async (db, tx) => {
-  //   const store = tx.objectStore('registros');
-  //   for await (const cursor of store) { cursor.update({ ...cursor.value, nuevo_campo: null, version_esquema: 2 }); }
-  // },
+  // v2: nota del completo para cualquier lugar + "quién lo preparó"
+  async (_db, tx) => {
+    let cursor = await tx.objectStore('registros').openCursor();
+    while (cursor) {
+      await cursor.update(migrarRegistro(cursor.value));
+      cursor = await cursor.continue();
+    }
+  },
 ];
 
 export const VERSION_DB = MIGRACIONES.length;
