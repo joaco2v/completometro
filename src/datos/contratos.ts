@@ -49,6 +49,23 @@ export interface AjustesStore {
   suscribir(alCambiar: () => void): () => void;
 }
 
+export interface ArchivoNube {
+  id: string;
+  nombre: string;
+}
+
+/**
+ * Carpeta privada en la nube donde se guarda el respaldo (hoy: carpeta oculta de la app en Google Drive).
+ * Mañana podría ser Dropbox, OneDrive o un bucket propio con la misma interfaz.
+ */
+export interface AlmacenNube {
+  listar(): Promise<ArchivoNube[]>;
+  descargarTexto(id: string): Promise<string>;
+  descargarBlob(id: string, tipo: string): Promise<Blob>;
+  crear(nombre: string, contenido: Blob): Promise<string>;
+  actualizar(id: string, contenido: Blob): Promise<void>;
+}
+
 /** Cambio pendiente de enviar al backend (hoy se acumula y no se envía a ningún lado). */
 export interface CambioPendiente {
   seq?: number;

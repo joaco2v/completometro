@@ -10,6 +10,7 @@ import { decimal, entero, fechaRelativa, plural } from '../formato';
 import { FormularioRegistro } from '../componentes/FormularioRegistro';
 import { ResumenAnualVista } from '../componentes/ResumenAnualVista';
 import { BannerInstalar } from '../componentes/Instalar';
+import { BotonRespaldarDrive, useDrive } from '../componentes/RespaldoDrive';
 import { navegar } from '../rutas';
 
 export function Inicio() {
@@ -22,7 +23,12 @@ export function Inicio() {
   const hambre = r.hambrePromedioSemana != null ? nivelHambre(Math.round(r.hambrePromedioSemana)) : undefined;
   const maxEmo = Math.max(1, ...r.distribucionEmocionesMes.map((e) => e.conteo));
 
-  const avisarRespaldo = ajustes && debeAvisarRespaldo(ajustes, registros.length, ahora);
+  const drive = useDrive();
+  const conDrive = drive.disponible && !!ajustes?.drive.conectado;
+  // Con Drive conectado, avisa apenas haya cambios sin subir porque la sesión de Google venció.
+  const avisarRespaldo = ajustes && (conDrive
+    ? drive.necesitaToque && ajustes.cambiosDesdeRespaldo > 0
+    : debeAvisarRespaldo(ajustes, registros.length, ahora));
   const anioBanner = ajustes ? anioDelBannerAnual(ahora, ajustes.bannerAnualCerrado) : null;
 
   if (cargando) return <div class="cargando">🌭</div>;
@@ -44,10 +50,16 @@ export function Inicio() {
           <span class="emoji-grande">💾</span>
           <div>
             <strong>{ajustes?.ultimoRespaldo ? `Tienes ${plural(ajustes.cambiosDesdeRespaldo, 'cambio', 'cambios')} sin respaldar` : 'Respalda tus completos'}</strong>
-            <p>Tus datos viven solo en este teléfono. Guarda una copia por si cambias de teléfono o se borra el navegador.</p>
+            {conDrive
+              ? <p>La conexión con Google Drive expiró. Toca el botón para subir tus cambios.</p>
+              : <p>Tus datos viven solo en este teléfono. Guarda una copia por si cambias de teléfono o se borra el navegador.</p>}
             <div class="acciones-banner">
-              <button type="button" class="boton boton-primario boton-chico" onClick={() => navegar('ajustes', 'respaldo')}>Respaldar ahora</button>
-              <button type="button" class="boton boton-chico" onClick={() => datos.ajustes.guardar({ avisoRespaldoPospuestoHasta: aIsoLocal(sumarDias(new Date(), RESPALDO.diasAlPosponer)) })}>Más tarde</button>
+              {conDrive
+                ? <BotonRespaldarDrive />
+                : <button type="button" class="boton boton-primario boton-chico" onClick={() => navegar('ajustes', 'respaldo')}>Respaldar ahora</button>}
+              {!conDrive && (
+                <button type="button" class="boton boton-chico" onClick={() => datos.ajustes.guardar({ avisoRespaldoPospuestoHasta: aIsoLocal(sumarDias(new Date(), RESPALDO.diasAlPosponer)) })}>Más tarde</button>
+              )}
             </div>
           </div>
         </div>

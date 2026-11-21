@@ -29,8 +29,10 @@ gratis, sin tiendas de apps, sin cuentas y **sin internet**. Tus datos se quedan
 
 ### Respaldo (importante)
 
-Los datos viven solo en tu teléfono. En **Ajustes › Respaldo** tienes la guía paso a paso:
-**Guardar copia** abre el menú de compartir del teléfono → elige Google Drive, "Guardar en Archivos"
+Los datos viven solo en tu teléfono. En **Ajustes › Respaldo** tienes la guía paso a paso.
+Lo más cómodo es **Conectar con Google**: la app guarda sola una copia privada en tu Google Drive
+después de cada cambio, y en un teléfono nuevo basta con conectarse con la misma cuenta.
+También puedes hacerlo a mano: **Guardar copia** abre el menú de compartir del teléfono → elige Google Drive, "Guardar en Archivos"
 (iCloud), WhatsApp o correo. Para cambiar de teléfono: instala la app en el nuevo y toca
 **Importar respaldo**. La app te recordará respaldar de vez en cuando.
 Opciones y planes de respaldo automático: [docs/RESPALDO.md](docs/RESPALDO.md).
@@ -71,6 +73,8 @@ Si igual quieres tu propia versión:
 3. Ve a **Actions**, habilita los workflows y ejecuta **"Publicar en GitHub Pages"** (o haz cualquier commit en `main`).
 4. En unos minutos tu app queda en `https://<tu-usuario>.github.io/<nombre-del-repo>/`.
    Funciona con cualquier nombre de repositorio, no hay que configurar rutas.
+5. En `src/config.ts`, cambia `autor` y `repositorio` por tus datos (se muestran en "Acerca del Completómetro").
+6. Opcional: activa el respaldo en Google Drive creando tu propio ID de cliente ([docs/GOOGLE_DRIVE.md](docs/GOOGLE_DRIVE.md)).
 
 ## 🛠️ Desarrollo
 

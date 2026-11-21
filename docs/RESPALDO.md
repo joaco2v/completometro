@@ -8,7 +8,8 @@ las formas de respaldar, pensando en alguien que no quiere pelear con la tecnolo
 
 | Opción | Qué hace la persona | Ventajas | Límites |
 |---|---|---|---|
-| **1. Guardar en la nube** (recomendada) | Toca "Guardar copia" → elige **Drive** (Android) o **Guardar en Archivos › iCloud Drive** (iPhone). | Funciona en todos lados, sin cuentas nuevas. La copia incluye las fotos. | Es manual (la app lo recuerda). |
+| **Respaldo automático en Google Drive** (recomendada, si está configurado) | Toca "Conectar con Google" una vez y acepta. | Se respalda solo después de cada cambio. En un teléfono nuevo, conectarse restaura todo. Sirve para dos teléfonos. | Necesita que quien publica la app cree un ID de cliente de Google ([GOOGLE_DRIVE.md](GOOGLE_DRIVE.md)). La sesión dura 1 hora: se renueva al tocar "Guardar". |
+| **1. Guardar una copia en la nube** | Toca "Guardar copia" → elige **Drive** (Android) o **Guardar en Archivos › iCloud Drive** (iPhone). | Funciona en todos lados, sin cuentas nuevas. La copia incluye las fotos. | Es manual (la app lo recuerda). |
 | **2. WhatsApp o correo** | Mismo botón → elige WhatsApp ("Mensajes guardados" o un chat propio) o correo. | Lo que más gente ya sabe usar. | WhatsApp puede limitar archivos muy grandes (muchas fotos). |
 | **3. Descargar** | "Descargar respaldo" → queda en *Descargas*. | No necesita internet. | No sirve si se pierde el teléfono. |
 | **Exportar ZIP** | Para Power BI/Excel. También sirve para restaurar. | CSV + fotos + JSON. | Chrome no permite "compartir" un .zip: se descarga. |
@@ -27,9 +28,11 @@ Además:
 > compartir ciertos tipos de archivo (imágenes, PDF, texto, JSON…) y el ZIP no está en la lista.
 > El `.json` lleva las fotos incrustadas, así que es un respaldo completo de un solo archivo.
 
-## Próximo paso propuesto: respaldo automático
+## Respaldo automático
 
-### A. Google Drive, carpeta privada de la app (recomendado para empezar)
+### A. Google Drive, carpeta privada de la app — IMPLEMENTADO
+
+Cómo activarlo: [GOOGLE_DRIVE.md](GOOGLE_DRIVE.md).
 
 Cómo lo viviría la persona:
 
@@ -62,5 +65,5 @@ Detalles técnicos:
 - **Carpeta sincronizada en el computador** (File System Access API): solo Chrome de escritorio, y la app es para el teléfono.
 - **Dropbox / OneDrive**: posibles con OAuth, como Google Drive, pero mucha menos gente los tiene en Chile.
 
-**Recomendación**: implementar la opción A (Google Drive `appdata`) como "respaldo automático" opcional,
-manteniendo las opciones manuales para quien no quiera conectar ninguna cuenta.
+La opción A ya está implementada como respaldo automático opcional; las opciones manuales siguen
+disponibles para quien no quiera conectar ninguna cuenta.

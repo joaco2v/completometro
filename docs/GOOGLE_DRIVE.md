@@ -1,0 +1,63 @@
+# Activar el respaldo automático en Google Drive
+
+El respaldo en Drive necesita un **ID de cliente OAuth** de Google. Es gratis y se crea una sola vez
+por cada publicación de la app (si haces un fork, creas el tuyo). Sin este ID, la app funciona igual,
+pero la opción de Drive no aparece.
+
+> El ID de cliente **no es secreto**: viaja dentro de la app. Lo que protege a cada persona es que
+> Google solo entrega permisos a la página autorizada (tu dirección de GitHub Pages) y que la app
+> solo pide acceso a su carpeta oculta (`drive.appdata`).
+
+## 1. Crear el proyecto (5 minutos)
+
+1. Entra a <https://console.cloud.google.com/> con tu cuenta de Google.
+2. Arriba, en el selector de proyectos › **Proyecto nuevo** › nombre `completometro` › **Crear**.
+3. Menú ☰ › **APIs y servicios** › **Biblioteca** › busca **Google Drive API** › **Habilitar**.
+
+## 2. Pantalla de consentimiento (lo que verán las personas)
+
+1. **APIs y servicios** › **Pantalla de consentimiento de OAuth** (o "Google Auth Platform") › **Comenzar**.
+2. Nombre de la app: `Completómetro`. Correo de asistencia: el tuyo. Público: **Externo**.
+3. En **Acceso a datos** › **Agregar o quitar permisos**, agrega:
+   - `.../auth/drive.appdata` (Ver, crear y borrar sus propios datos de configuración en tu Google Drive)
+   - `.../auth/userinfo.email` (para mostrar "Conectado como …")
+4. Mientras esté en modo **Prueba**, solo pueden conectarse las cuentas que agregues en
+   **Público › Usuarios de prueba** (hasta 100). Agrega la tuya.
+5. Para que cualquiera pueda usarla: **Público › Publicar app**. Estos permisos no son "sensibles",
+   así que no requiere revisión de seguridad; Google puede pedir verificar el nombre y el logo.
+
+## 3. Crear el ID de cliente
+
+1. **APIs y servicios** › **Credenciales** (o "Clientes") › **Crear credenciales** › **ID de cliente de OAuth**.
+2. Tipo: **Aplicación web**. Nombre: `Completómetro web`.
+3. **Orígenes autorizados de JavaScript**:
+   - `https://<tu-usuario>.github.io` (sin la ruta del repositorio)
+   - `http://localhost:4173` y `http://localhost:5173` (para probar en tu computador)
+4. No hace falta "URI de redireccionamiento". **Crear**.
+5. Copia el ID: termina en `.apps.googleusercontent.com`.
+
+## 4. Ponerlo en la app
+
+**Publicación en GitHub Pages**: en tu repositorio › **Settings** › **Secrets and variables** › **Actions**
+› pestaña **Variables** › **New repository variable**:
+
+- Nombre: `GOOGLE_CLIENT_ID`
+- Valor: el ID copiado
+
+Luego **Actions** › **Publicar en GitHub Pages** › **Run workflow** (o haz cualquier commit).
+
+Con GitHub CLI: `gh variable set GOOGLE_CLIENT_ID --body "<id>"`.
+
+**En tu computador**: crea `.env` con `VITE_GOOGLE_CLIENT_ID=<id>` y usa `npm run dev`.
+
+## Cómo funciona (resumen técnico)
+
+- Inicio de sesión con Google Identity Services (modelo de token, todo en el navegador, sin servidor).
+- Archivos en la carpeta oculta `appDataFolder`: `completometro-datos.json` + `foto-<id>.jpg`.
+- Cada sincronización baja el JSON, lo junta con lo local (gana el último cambio por registro),
+  sube las fotos nuevas y sube el JSON combinado. Por eso también sirve para restaurar en un
+  teléfono nuevo y para usar la app en dos teléfonos.
+- El token dura ~1 hora y queda solo en memoria. Los navegadores solo dejan abrir la ventana de
+  Google desde un toque, así que la app renueva la sesión cuando la persona toca **Guardar completo**
+  (si ya dio permiso, la ventana se abre y se cierra sola) o **Respaldar en Drive**.
+- Código: `src/servicios/googleDrive.ts`, `src/servicios/respaldoDrive.ts`, `src/datos/sincronizarNube.ts`.

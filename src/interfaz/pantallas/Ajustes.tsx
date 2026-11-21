@@ -9,6 +9,7 @@ import { config } from '../../config';
 import { useEstado } from '../estado';
 import { entero, fechaRelativa, plural } from '../formato';
 import { PasosInstalar } from '../componentes/Instalar';
+import { TarjetaDrive, useDrive } from '../componentes/RespaldoDrive';
 
 export function Ajustes({ seccion }: { seccion: string | null }) {
   const { ajustes, registros, ahora, toast } = useEstado();
@@ -18,6 +19,9 @@ export function Ajustes({ seccion }: { seccion: string | null }) {
   const [almacen, setAlmacen] = useState<Awaited<ReturnType<typeof estadoAlmacenamiento>> | null>(null);
   const [pendientes, setPendientes] = useState<number | null>(null);
   const inputImportar = useRef<HTMLInputElement>(null);
+  const hayDrive = useDrive().disponible;
+  /** Con Drive disponible, las opciones manuales pasan a ser la 2, 3 y 4. */
+  const n = (i: number) => (hayDrive ? i + 1 : i);
 
   useEffect(() => {
     if (ajustes) setInicial(String(contadorInicial(ajustes.contadoresIniciales, anio) || ''));
@@ -112,8 +116,10 @@ export function Ajustes({ seccion }: { seccion: string | null }) {
           )}
         </ul>
 
-        <div class="opcion-respaldo recomendada">
-          <h4>Opción 1 · Guardar en la nube <span class="pastilla">recomendada</span></h4>
+        <TarjetaDrive />
+
+        <div class={`opcion-respaldo ${hayDrive ? '' : 'recomendada'}`}>
+          <h4>Opción {n(1)} · Guardar una copia en la nube {!hayDrive && <span class="pastilla">recomendada</span>}</h4>
           <ol>
             <li>Toca <strong>Guardar copia</strong>.</li>
             <li>Se abre el menú para compartir del teléfono.</li>
@@ -128,7 +134,7 @@ export function Ajustes({ seccion }: { seccion: string | null }) {
         </div>
 
         <div class="opcion-respaldo">
-          <h4>Opción 2 · Enviártela por WhatsApp o correo</h4>
+          <h4>Opción {n(2)} · Enviártela por WhatsApp o correo</h4>
           <ol>
             <li>Toca el mismo botón <strong>Guardar copia</strong> de arriba.</li>
             <li>Elige <strong>WhatsApp</strong> (mándatela a ti mismo o a "Mensajes guardados") o tu <strong>correo</strong>.</li>
@@ -136,22 +142,18 @@ export function Ajustes({ seccion }: { seccion: string | null }) {
         </div>
 
         <div class="opcion-respaldo">
-          <h4>Opción 3 · Descargar al teléfono</h4>
+          <h4>Opción {n(3)} · Descargar al teléfono</h4>
           <p class="ayuda">Queda en la carpeta Descargas. Sirve si borras el navegador, pero no si pierdes el teléfono.</p>
           <button type="button" class="boton boton-bloque" onClick={respaldarDescargando} disabled={!!ocupado}>
             {ocupado === 'descargar' ? 'Preparando…' : '⬇️ Descargar respaldo'}
           </button>
         </div>
 
-        <div class="opcion-respaldo proximamente">
-          <h4>Próximamente · Respaldo automático</h4>
-          <p class="ayuda">Conectar tu cuenta de Google una vez y que la app guarde sola una copia privada en tu Drive. Está en estudio (ver docs/RESPALDO.md).</p>
-        </div>
-
         <h4>Restaurar (cambio de teléfono)</h4>
         <ol>
           <li>En el teléfono nuevo, abre la app e instálala.</li>
-          <li>Toca <strong>Importar respaldo</strong> y elige el archivo <em>completometro-respaldo-….json</em> (o el .zip exportado) desde Drive, Archivos, WhatsApp o Descargas.</li>
+          {hayDrive && <li>Si usabas Google Drive: toca <strong>Conectar con Google</strong> con la misma cuenta y listo.</li>}
+          <li>{hayDrive ? 'Si guardaste un archivo: toca ' : 'Toca '}<strong>Importar respaldo</strong> y elige el archivo <em>completometro-respaldo-….json</em> (o el .zip exportado) desde Drive, Archivos, WhatsApp o Descargas.</li>
           <li>La app junta los datos sin duplicar nada.</li>
         </ol>
         <button type="button" class="boton boton-bloque" onClick={() => inputImportar.current?.click()} disabled={!!ocupado}>
@@ -189,17 +191,39 @@ export function Ajustes({ seccion }: { seccion: string | null }) {
         <PasosInstalar />
       </section>
 
-      <section class="tarjeta" id="info">
-        <h3>Acerca del Completómetro</h3>
-        <ul class="lista-simple">
-          <li><span>Versión</span><span>{config.version}</span></li>
-          <li><span>Registros</span><span>{entero(registros.length)}</span></li>
-          <li><span>Modo</span><span>{config.modo === 'local' ? 'Solo en este teléfono' : 'Con servidor'}</span></li>
-          {pendientes != null && <li><span>Cambios por sincronizar</span><span>{entero(pendientes)}</span></li>}
-          {almacen?.usadoMB != null && <li><span>Espacio usado</span><span>{almacen.usadoMB} MB</span></li>}
-        </ul>
-        <p class="ayuda">Gratis y de código abierto. Sin cuentas ni publicidad: tus datos no salen de tu teléfono salvo cuando tú exportas o respaldas.</p>
-        <p class="ayuda"><strong>Conexión a servidor:</strong> todavía no disponible. La app ya está preparada para sincronizar en el futuro (ver docs/BACKEND.md).</p>
+      <section class="tarjeta acerca" id="acerca">
+        <div class="acerca-cabecera">
+          <img src="./icono.svg" alt="" width={56} height={56} />
+          <div>
+            <h3>Acerca del Completómetro</h3>
+            <span class="ayuda">Versión {config.version}</span>
+          </div>
+        </div>
+        <p>
+          Una app para llevar la cuenta de todos los completos que te comes en el año: dónde, cuántos,
+          cómo te sentías y cuánta hambre tenías. Al final del año, tu resumen para compartir. 🌭
+        </p>
+        <p class="ayuda">
+          Gratis, de código abierto y sin publicidad. Tus datos se guardan en tu teléfono y solo salen de ahí
+          cuando tú los exportas o respaldas.
+        </p>
+        <div class="acerca-enlaces">
+          <a class="boton" href={config.autor.github} target="_blank" rel="noopener noreferrer">
+            👤 Hecho por {config.autor.nombre}
+          </a>
+          <a class="boton" href={config.repositorio} target="_blank" rel="noopener noreferrer">
+            💻 Código en GitHub
+          </a>
+        </div>
+        <details class="detalles-tecnicos">
+          <summary>Datos técnicos</summary>
+          <ul class="lista-simple">
+            <li><span>Registros guardados</span><span>{entero(registros.length)}</span></li>
+            <li><span>Modo</span><span>{config.modo === 'local' ? 'Solo en este teléfono' : 'Con servidor'}</span></li>
+            {pendientes != null && <li><span>Cambios en cola (para un servidor futuro)</span><span>{entero(pendientes)}</span></li>}
+            {almacen?.usadoMB != null && <li><span>Espacio usado</span><span>{almacen.usadoMB} MB</span></li>}
+          </ul>
+        </details>
       </section>
     </div>
   );

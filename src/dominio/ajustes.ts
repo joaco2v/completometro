@@ -18,6 +18,15 @@ export interface Ajustes {
   avisoRespaldoPospuestoHasta: string | null;
   /** Años cuyo banner de resumen anual ya se cerró. */
   bannerAnualCerrado: number[];
+  /** Respaldo automático en Google Drive. */
+  drive: EstadoDrive;
+}
+
+export interface EstadoDrive {
+  conectado: boolean;
+  correo: string | null;
+  /** Fecha ISO de la última sincronización exitosa. */
+  ultimaSync: string | null;
 }
 
 export function ajustesPorDefecto(dispositivo_id: string): Ajustes {
@@ -30,6 +39,7 @@ export function ajustesPorDefecto(dispositivo_id: string): Ajustes {
     cambiosDesdeRespaldo: 0,
     avisoRespaldoPospuestoHasta: null,
     bannerAnualCerrado: [],
+    drive: { conectado: false, correo: null, ultimaSync: null },
   };
 }
 

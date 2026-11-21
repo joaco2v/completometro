@@ -72,7 +72,8 @@ export function base64ABlob(b64: string, tipo: string): Blob {
 
 const nombreFotoDe = (r: Pick<Registro, 'id'>, tipo: string) => `${r.id}.${extension(tipo)}`;
 
-async function reunir(d: Dependencias, embeber: boolean) {
+/** Arma el respaldo completo. Con `embeber`, las fotos van dentro del JSON (base64). */
+export async function reunir(d: Dependencias, embeber: boolean) {
   const [registros, ajustes] = await Promise.all([d.repo.listar({ incluirEliminados: true }), d.ajustes.leer()]);
   const fotos: (FotoRespaldo & { blob: Blob })[] = [];
   const archivoPorRegistro = new Map<string, string>();
@@ -181,6 +182,18 @@ export async function importarArchivo(archivo: Blob, d: Dependencias): Promise<R
     respaldo = validarRespaldo(datos);
   }
 
+  return aplicarRespaldo(respaldo, async (meta) => (meta.archivo && leerFotoZip ? leerFotoZip(meta.archivo, meta.tipo) : null), d);
+}
+
+/**
+ * Integra un respaldo ya leído: fotos que falten, registros (gana el último cambio) y ajustes.
+ * `leerFoto` trae una foto que no venga incrustada (desde el ZIP, Google Drive, etc.).
+ */
+export async function aplicarRespaldo(
+  respaldo: ArchivoRespaldo,
+  leerFoto: (meta: FotoRespaldo) => Promise<Blob | null>,
+  d: Dependencias,
+): Promise<ResultadoImportacion> {
   // Fotos: solo las de registros que realmente entran (nuevos o más recientes) y que no tengamos.
   const fotosPorId = new Map(respaldo.fotos.map((f) => [f.id, f]));
   const existentes = new Set(await d.fotos.listarIds());
@@ -190,9 +203,7 @@ export async function importarArchivo(archivo: Blob, d: Dependencias): Promise<R
     if (resolverConflicto(await d.repo.obtener(r.id), r) === 'ignora') continue;
     const meta = fotosPorId.get(r.foto_id);
     if (!meta) continue;
-    let blob: Blob | null = null;
-    if (meta.base64) blob = base64ABlob(meta.base64, meta.tipo);
-    else if (meta.archivo && leerFotoZip) blob = await leerFotoZip(meta.archivo, meta.tipo);
+    const blob = meta.base64 ? base64ABlob(meta.base64, meta.tipo) : await leerFoto(meta).catch(() => null);
     if (!blob) continue;
     await d.fotos.guardar(blob, meta.id);
     existentes.add(meta.id);

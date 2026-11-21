@@ -6,6 +6,7 @@ import { localesConocidos, totalAnio } from '../../dominio/metricas';
 import { ayudaUbicacion, coordenadasDeFoto, obtenerGps, type ErrorUbicacion, type Ubicacion } from '../../servicios/ubicacion';
 import { comprimirFoto } from '../../servicios/imagen';
 import { pedirAlmacenamientoPersistente } from '../../servicios/archivos';
+import { renovarSesionSiHaceFalta } from '../../servicios/respaldoDrive';
 import { useEstado } from '../estado';
 import { aInputFecha, entero, fechaRelativa } from '../formato';
 import { Modal } from './Modal';
@@ -107,6 +108,8 @@ export function FormularioRegistro({ registro, alCerrar }: { registro?: Registro
   const guardar = async (e: Event) => {
     e.preventDefault();
     if (guardando) return;
+    // Antes de cualquier await: aprovecha este toque para renovar la sesión de Google Drive si venció.
+    renovarSesionSiHaceFalta();
     setGuardando(true);
     setError(null);
     let fotoCreada: string | null = null;
