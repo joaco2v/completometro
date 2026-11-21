@@ -5,7 +5,10 @@
 import type { ResumenAnual } from '../dominio/metricas';
 import { buscarEmocion, nivelHambre, type Emocion } from '../dominio/emociones';
 import { nombreMes } from '../dominio/fechas';
+import { config } from '../config';
 
+/** Cuenta de Instagram del proyecto (si haces un fork, cámbiala o déjala vacía en config.ts). */
+const INSTAGRAM = config.instagram;
 const W = 1080;
 const H = 1920;
 const FUENTE = '-apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
@@ -30,6 +33,8 @@ function rectRedondo(ctx: CanvasRenderingContext2D, x: number, y: number, w: num
   ctx.closePath();
 }
 
+const mayuscula = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 export interface Tarjeta {
   emoji: string;
   titulo: string;
@@ -43,7 +48,7 @@ export function tarjetasResumen(r: ResumenAnual, personalizadas: readonly Emocio
   const t: Tarjeta[] = [
     { emoji: '🔥', titulo: 'Racha más larga', valor: `${r.rachaMasLarga} ${r.rachaMasLarga === 1 ? 'día' : 'días'}` },
     { emoji: '📅', titulo: 'Días con completo', valor: String(r.diasConCompletos) },
-    { emoji: '🏆', titulo: 'Mes más completero', valor: r.mesTop ? `${nombreMes(r.mesTop.mes, true)} (${r.mesTop.completos})` : '—' },
+    { emoji: '🏆', titulo: 'Mes más completero', valor: r.mesTop ? `${mayuscula(nombreMes(r.mesTop.mes, true))} (${r.mesTop.completos})` : '—' },
     { emoji: '📍', titulo: 'Local favorito', valor: r.localFavorito ? r.localFavorito.nombre : '—' },
     { emoji: emo?.emoji ?? '💭', titulo: 'Emoción del año', valor: emo?.nombre ?? '—' },
     { emoji: hambre?.emoji ?? '🍽️', titulo: 'Hambre típica', valor: hambre?.nombre ?? '—' },
@@ -89,10 +94,10 @@ export async function dibujarResumenAnual(r: ResumenAnual, personalizadas: reado
 
   const tarjetas = tarjetasResumen(r, personalizadas).slice(0, 8);
   const margen = 70;
-  const gap = 28;
+  const gap = 24;
   const cw = (W - margen * 2 - gap) / 2;
-  const ch = 210;
-  const y0 = 790;
+  const ch = 196;
+  const y0 = 765;
   tarjetas.forEach((t, i) => {
     const x = margen + (i % 2) * (cw + gap);
     const y = y0 + Math.floor(i / 2) * (ch + gap);
@@ -101,20 +106,31 @@ export async function dibujarResumenAnual(r: ResumenAnual, personalizadas: reado
     ctx.fill();
     ctx.textAlign = 'left';
     ctx.font = `400 56px ${FUENTE}`;
-    ctx.fillText(t.emoji, x + 32, y + 82);
+    ctx.fillText(t.emoji, x + 32, y + 74);
     ctx.fillStyle = '#7a4a2a';
     ctx.font = `600 30px ${FUENTE}`;
-    ctx.fillText(t.titulo, x + 32, y + 130);
+    ctx.fillText(t.titulo, x + 32, y + 120);
     ctx.fillStyle = '#2a1a10';
     const tam = ajustarTexto(ctx, t.valor, cw - 64, 44);
     ctx.font = `800 ${tam}px ${FUENTE}`;
-    ctx.fillText(t.valor, x + 32, y + 182);
+    ctx.fillText(t.valor, x + 32, y + 170);
   });
 
   ctx.textAlign = 'center';
   ctx.fillStyle = '#fff8ee';
   ctx.font = `700 46px ${FUENTE}`;
-  ctx.fillText('¿Y tú, cuántos te comiste?', W / 2, H - 120);
+  // El pie queda sobre los ~100 px de abajo, que Instagram tapa con sus botones.
+  ctx.fillText('¿Y tú, cuántos te comiste?', W / 2, 1710);
+
+  // Invitación a etiquetar la cuenta del proyecto, en una "píldora" para que se lea sobre el fondo.
+  const etiqueta = `¡Etiquétanos! 😃 ${INSTAGRAM}`;
+  ctx.font = `800 40px ${FUENTE}`;
+  const anchoPildora = ctx.measureText(etiqueta).width + 72;
+  rectRedondo(ctx, (W - anchoPildora) / 2, 1745, anchoPildora, 72, 36);
+  ctx.fillStyle = 'rgba(255,248,238,0.95)';
+  ctx.fill();
+  ctx.fillStyle = '#c8102e';
+  ctx.fillText(etiqueta, W / 2, 1795);
 
   const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, 'image/png'));
   if (!blob) throw new Error('No pude crear la imagen.');

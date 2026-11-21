@@ -22,4 +22,6 @@ export const config = {
     nombre: 'joaco2v',
     github: 'https://github.com/joaco2v',
   },
+  /** Cuenta de Instagram del proyecto: aparece en la imagen del resumen anual. */
+  instagram: '@completometro',
 };

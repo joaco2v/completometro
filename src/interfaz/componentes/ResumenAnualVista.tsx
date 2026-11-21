@@ -5,6 +5,7 @@ import { dibujarResumenAnual, tarjetasResumen } from '../../servicios/imagenResu
 import { useEstado } from '../estado';
 import { entero } from '../formato';
 import { Modal } from './Modal';
+import { config } from '../../config';
 
 /** "Mi año en completos": tarjetas + imagen para historias de Instagram. */
 export function ResumenAnualVista({ anio, alCerrar }: { anio: number; alCerrar: () => void }) {
@@ -31,7 +32,7 @@ export function ResumenAnualVista({ anio, alCerrar }: { anio: number; alCerrar: 
   const compartir = async () => {
     if (!imagen) return;
     setOcupado(true);
-    const res = await compartirODescargar(imagen, `Mi ${anio} en completos`, `Este ${anio} me comí ${r.total} completos 🌭 #Completómetro`);
+    const res = await compartirODescargar(imagen, `Mi ${anio} en completos`, `Este ${anio} me comí ${r.total} completos 🌭 ${config.instagram} #Completómetro`);
     setOcupado(false);
     if (res === 'descargado') toast('Imagen descargada. Súbela a tus historias desde la galería.');
   };
@@ -62,6 +63,7 @@ export function ResumenAnualVista({ anio, alCerrar }: { anio: number; alCerrar: 
           📲 Compartir en historias
         </button>
         <p class="ayuda centrado">En el menú que se abre, elige Instagram › Historias. Si no aparece, la imagen se descarga y la subes desde tu galería.</p>
+        <p class="ayuda centrado">¡Etiquétanos! 😃 <strong>{config.instagram}</strong></p>
       </div>
     </Modal>
   );
