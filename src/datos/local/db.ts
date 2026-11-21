@@ -7,6 +7,7 @@
  */
 import { openDB, type DBSchema, type IDBPDatabase, type IDBPTransaction, type StoreNames } from 'idb';
 import { migrarRegistro, type Registro } from '../../dominio/modelo';
+import type { ResenaLocal } from '../../dominio/resenas';
 import type { CambioPendiente } from '../contratos';
 
 export interface FotoFila {
@@ -21,6 +22,7 @@ export interface CompletometroDB extends DBSchema {
   registros: { key: string; value: Registro; indexes: { por_fecha: string; por_actualizado: string } };
   fotos: { key: string; value: FotoFila };
   outbox: { key: number; value: CambioPendiente };
+  resenas: { key: string; value: ResenaLocal; indexes: { por_actualizado: string } };
   ajustes: { key: string; value: unknown };
 }
 
@@ -46,6 +48,11 @@ const MIGRACIONES: Migracion[] = [
       await cursor.update(migrarRegistro(cursor.value));
       cursor = await cursor.continue();
     }
+  },
+  // v3: reseñas de locales (calificar un local sin registrar un completo)
+  (db) => {
+    const resenas = db.createObjectStore('resenas', { keyPath: 'id' });
+    resenas.createIndex('por_actualizado', 'actualizado_en');
   },
 ];
 

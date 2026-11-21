@@ -29,7 +29,7 @@ export async function sincronizarConNube(nube: AlmacenNube, d: Dependencias): Pr
   const porNombre = new Map(archivos.map((a) => [a.nombre, a]));
   const datosRemotos = porNombre.get(ARCHIVO_DATOS);
 
-  let traidos: ResultadoImportacion = { nuevos: 0, actualizados: 0, ignorados: 0, fotos: 0 };
+  let traidos: ResultadoImportacion = { nuevos: 0, actualizados: 0, ignorados: 0, fotos: 0, resenas: 0 };
   if (datosRemotos) {
     const remoto = validarRespaldo(JSON.parse(await nube.descargarTexto(datosRemotos.id)));
     traidos = await aplicarRespaldo(

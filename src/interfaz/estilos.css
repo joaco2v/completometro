@@ -249,6 +249,25 @@ textarea { resize: vertical; }
 .drive-acciones { display: flex; flex-wrap: wrap; gap: 8px; }
 .drive-acciones .boton { flex: 1 1 140px; }
 
+/* ---------- Top 5 ---------- */
+.lista-top { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.lista-top li { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; border-bottom: 1px dashed var(--borde); }
+.lista-top li:last-child { border-bottom: none; padding-bottom: 0; }
+.top-pos { font-size: 1.5rem; width: 34px; text-align: center; flex: none; font-weight: 800; color: var(--rojo); }
+.top-cuerpo { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.top-cuerpo strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.top-nota { font-size: 1.35rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.top-acciones { display: flex; gap: 2px; flex: none; }
+.top-acciones .boton-icono { padding: 6px; font-size: 0.95rem; }
+.lista-top-completa { margin-top: 10px; }
+.lista-top-completa .top-pos { font-size: 1rem; color: var(--texto-suave); }
+.enlace-fila { all: unset; cursor: pointer; flex: 1; min-width: 0; }
+.plantillas-botones { display: flex; flex-wrap: wrap; gap: 8px; }
+.plantillas-botones .boton { flex: 1 1 150px; }
+.cargando-mapa { display: flex; align-items: center; justify-content: center; font-size: 2rem; background: var(--superficie-2); }
+.vista-imagen { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.vista-imagen img { width: 100%; max-width: 320px; border-radius: 14px; box-shadow: var(--sombra); }
+
 /* ---------- Resumen anual ---------- */
 .resumen-anual { display: flex; flex-direction: column; gap: 14px; }
 .resumen-anual-total { display: flex; flex-direction: column; align-items: center; color: var(--rojo); font-weight: 700; }
@@ -259,7 +278,7 @@ textarea { resize: vertical; }
 .vista-previa summary { cursor: pointer; color: var(--rojo); font-weight: 600; }
 
 /* ---------- Pestañas y toast ---------- */
-.barra-pestanas { position: fixed; bottom: 0; left: 0; right: 0; z-index: 10; display: grid; grid-template-columns: repeat(4, 1fr);
+.barra-pestanas { position: fixed; bottom: 0; left: 0; right: 0; z-index: 10; display: grid; grid-template-columns: repeat(5, 1fr);
   background: var(--superficie); border-top: 1px solid var(--borde); padding-bottom: env(safe-area-inset-bottom); }
 .pestana { border: none; background: none; height: var(--alto-pestanas); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 0.72rem; color: var(--texto-suave); }
 .pestana-icono { font-size: 1.4rem; filter: grayscale(1); opacity: 0.7; }

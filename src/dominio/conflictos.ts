@@ -11,7 +11,7 @@ import type { Registro } from './modelo';
  */
 export type Resolucion = 'nuevo' | 'reemplaza' | 'ignora';
 
-export function resolverConflicto(local: Registro | undefined, entrante: Registro): Resolucion {
+export function resolverConflicto(local: Pick<Registro, 'actualizado_en'> | undefined, entrante: Pick<Registro, 'actualizado_en'>): Resolucion {
   if (!local) return 'nuevo';
   const tLocal = Date.parse(local.actualizado_en) || 0;
   const tEntrante = Date.parse(entrante.actualizado_en) || 0;

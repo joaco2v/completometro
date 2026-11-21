@@ -14,8 +14,9 @@ import { aIsoLocal, migrarRegistro, VERSION_ESQUEMA, type Registro } from '../do
 import type { Emocion } from '../dominio/emociones';
 import type { ContadoresIniciales } from '../dominio/acumulado';
 import { claveDia } from '../dominio/fechas';
-import type { AjustesStore, FotoStorage, RegistroRepository } from './contratos';
-import { extension, generarCsv } from './csv';
+import type { AjustesStore, FotoStorage, RegistroRepository, ResenaRepository } from './contratos';
+import { extension, generarCsv, generarCsvResenas } from './csv';
+import type { ResenaLocal } from '../dominio/resenas';
 
 export const FORMATO = 'completometro-respaldo';
 
@@ -33,14 +34,23 @@ export interface ArchivoRespaldo {
   version_formato: 1;
   version_esquema: number;
   exportado_en: string;
-  ajustes: { contadoresIniciales: ContadoresIniciales; emocionesPersonalizadas: Emocion[] };
+  ajustes: {
+    contadoresIniciales: ContadoresIniciales;
+    emocionesPersonalizadas: Emocion[];
+    /** Desde v0.4.0. */
+    modoTop?: 'auto' | 'personalizado';
+    topPersonalizado?: string[];
+  };
   /** Incluye los eliminados (borrado lógico) para que el borrado viaje al otro teléfono. */
   registros: Registro[];
   fotos: FotoRespaldo[];
+  /** Reseñas de locales sin completo (desde v0.4.0; los respaldos antiguos no la traen). */
+  resenas?: ResenaLocal[];
 }
 
 export interface Dependencias {
   repo: RegistroRepository;
+  resenas: ResenaRepository;
   fotos: FotoStorage;
   ajustes: AjustesStore;
 }
@@ -50,6 +60,8 @@ export interface ResultadoImportacion {
   actualizados: number;
   ignorados: number;
   fotos: number;
+  /** Reseñas nuevas o actualizadas. */
+  resenas: number;
 }
 
 // ---------- utilidades base64 (funcionan en navegador y en Node) ----------
@@ -74,7 +86,11 @@ const nombreFotoDe = (r: Pick<Registro, 'id'>, tipo: string) => `${r.id}.${exten
 
 /** Arma el respaldo completo. Con `embeber`, las fotos van dentro del JSON (base64). */
 export async function reunir(d: Dependencias, embeber: boolean) {
-  const [registros, ajustes] = await Promise.all([d.repo.listar({ incluirEliminados: true }), d.ajustes.leer()]);
+  const [registros, resenas, ajustes] = await Promise.all([
+    d.repo.listar({ incluirEliminados: true }),
+    d.resenas.listar({ incluirEliminados: true }),
+    d.ajustes.leer(),
+  ]);
   const fotos: (FotoRespaldo & { blob: Blob })[] = [];
   const archivoPorRegistro = new Map<string, string>();
   for (const r of registros) {
@@ -96,9 +112,15 @@ export async function reunir(d: Dependencias, embeber: boolean) {
     version_formato: 1,
     version_esquema: VERSION_ESQUEMA,
     exportado_en: aIsoLocal(new Date()),
-    ajustes: { contadoresIniciales: ajustes.contadoresIniciales, emocionesPersonalizadas: ajustes.emocionesPersonalizadas },
+    ajustes: {
+      contadoresIniciales: ajustes.contadoresIniciales,
+      emocionesPersonalizadas: ajustes.emocionesPersonalizadas,
+      modoTop: ajustes.modoTop,
+      topPersonalizado: ajustes.topPersonalizado,
+    },
     registros,
     fotos: fotos.map(({ blob: _b, ...f }) => f),
+    resenas,
   };
   return { respaldo, fotos, archivoPorRegistro, ajustes };
 }
@@ -108,6 +130,7 @@ const LEEME = `COMPLETÓMETRO – Exportación de datos
 completos.csv   Una fila por registro. UTF-8, separador coma, decimales con punto.
                 Para Power BI: Obtener datos > Texto/CSV > completos.csv
                 El visual de mapa usa las columnas "latitud" y "longitud".
+resenas_locales.csv  Locales que calificaste sin registrar un completo.
 completos.json  Respaldo completo (incluye metadatos). Sirve para "Importar" en la app.
 fotos/          Imágenes. La columna foto_archivo del CSV indica el nombre de cada una.
 `;
@@ -119,6 +142,7 @@ export async function exportarZip(d: Dependencias): Promise<File> {
   const zip = new JSZip();
   const conAcumulado = calcularAcumulados(respaldo.registros, ajustes.contadoresIniciales);
   zip.file('completos.csv', generarCsv(conAcumulado, ajustes.emocionesPersonalizadas, (r) => archivoPorRegistro.get(r.id) ?? null));
+  zip.file('resenas_locales.csv', generarCsvResenas((respaldo.resenas ?? []).filter((s) => !s.eliminado_en)));
   zip.file('completos.json', JSON.stringify(respaldo, null, 2));
   zip.file('LEEME.txt', LEEME);
   const carpeta = zip.folder('fotos')!;
@@ -148,7 +172,15 @@ export function validarRespaldo(x: unknown): ArchivoRespaldo {
     ...(r as ArchivoRespaldo),
     registros: validos.map((g) => migrarRegistro({ ...g, cantidad: Number(g.cantidad) || 1 })),
     fotos: Array.isArray(r.fotos) ? r.fotos : [],
-    ajustes: { contadoresIniciales: r.ajustes?.contadoresIniciales ?? {}, emocionesPersonalizadas: r.ajustes?.emocionesPersonalizadas ?? [] },
+    resenas: Array.isArray(r.resenas)
+      ? r.resenas.filter((s) => s && typeof s.id === 'string' && typeof s.nombre_local === 'string' && typeof s.actualizado_en === 'string')
+      : [],
+    ajustes: {
+      contadoresIniciales: r.ajustes?.contadoresIniciales ?? {},
+      emocionesPersonalizadas: r.ajustes?.emocionesPersonalizadas ?? [],
+      modoTop: r.ajustes?.modoTop,
+      topPersonalizado: Array.isArray(r.ajustes?.topPersonalizado) ? r.ajustes.topPersonalizado : undefined,
+    },
   };
 }
 
@@ -211,6 +243,7 @@ export async function aplicarRespaldo(
   }
 
   const resultado = await d.repo.fusionar(respaldo.registros);
+  const rs = await d.resenas.fusionar(respaldo.resenas ?? []);
 
   // Ajustes: completa contadores iniciales que falten y suma emociones personalizadas nuevas.
   const actuales = await d.ajustes.leer();
@@ -218,7 +251,11 @@ export async function aplicarRespaldo(
   for (const [anio, v] of Object.entries(respaldo.ajustes.contadoresIniciales)) if (!contadores[anio]) contadores[anio] = v;
   const ids = new Set(actuales.emocionesPersonalizadas.map((e) => e.id));
   const emociones = [...actuales.emocionesPersonalizadas, ...respaldo.ajustes.emocionesPersonalizadas.filter((e) => e?.id && !ids.has(e.id))];
-  await d.ajustes.guardar({ contadoresIniciales: contadores, emocionesPersonalizadas: emociones });
+  // Top personalizado: si aquí no hay uno, se trae el del respaldo.
+  const top = !actuales.topPersonalizado?.length && respaldo.ajustes.topPersonalizado?.length
+    ? { topPersonalizado: respaldo.ajustes.topPersonalizado.slice(0, 5), modoTop: respaldo.ajustes.modoTop ?? actuales.modoTop }
+    : {};
+  await d.ajustes.guardar({ contadoresIniciales: contadores, emocionesPersonalizadas: emociones, ...top });
 
-  return { ...resultado, fotos };
+  return { ...resultado, fotos, resenas: rs.nuevos + rs.actualizados };
 }

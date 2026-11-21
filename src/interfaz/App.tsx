@@ -4,11 +4,13 @@ import { ProveedorEstado } from './estado';
 import { navegar, useRuta, type Ruta } from './rutas';
 import { Inicio } from './pantallas/Inicio';
 import { Historial } from './pantallas/Historial';
+import { Top } from './pantallas/Top';
 import { Ajustes } from './pantallas/Ajustes';
 
 const PESTANAS: { ruta: Ruta; icono: string; nombre: string }[] = [
   { ruta: 'inicio', icono: '🌭', nombre: 'Inicio' },
   { ruta: 'historial', icono: '📜', nombre: 'Historial' },
+  { ruta: 'top', icono: '🏆', nombre: 'Top 5' },
   { ruta: 'dashboard', icono: '📊', nombre: 'Dashboard' },
   { ruta: 'ajustes', icono: '⚙️', nombre: 'Ajustes' },
 ];
@@ -40,6 +42,7 @@ export function App() {
       <main class="contenido">
         {ruta === 'inicio' && <Inicio />}
         {ruta === 'historial' && <Historial />}
+        {ruta === 'top' && <Top />}
         {ruta === 'dashboard' && <DashboardPerezoso />}
         {ruta === 'ajustes' && <Ajustes seccion={seccion} />}
       </main>

@@ -8,14 +8,18 @@ gratis, sin tiendas de apps, sin cuentas y **sin internet**. Tus datos se quedan
   ubicación automática. Al escribir el local, sugiere locales cercanos de OpenStreetMap.
 - Resumen al abrir: total del año, hoy/semana/mes, promedio semanal, racha y emociones del mes.
 - Dashboard: gráficos por semana o por mes, mapa de tus completos, ranking de locales y emociones.
+- **Mi top 5** de locales: según tus notas (si empatan, gana el más visitado) o armado a mano.
+  Puedes calificar un local sin registrar un completo, y ver un mapa de calor de dónde comes más.
 - **Resumen del año** para compartir en historias de Instagram (banner desde el 31 de diciembre).
+- Plantillas estilo boleta retro para historias: **"Mi top 5"** y **"Mi completo favorito"** (en blanco,
+  para rellenar y etiquetar al local).
 - Exporta a **CSV/ZIP para Power BI o Excel** y respalda en Drive, iCloud, WhatsApp o correo.
 
 <p align="center">
   <img src="docs/capturas/01-inicio.jpg" width="200" alt="Inicio">
   <img src="docs/capturas/04-en-casa-y-hambre.jpg" width="200" alt="Registrar un completo">
-  <img src="docs/capturas/06-dashboard.jpg" width="200" alt="Dashboard">
-  <img src="docs/capturas/10-imagen-historias.jpg" width="200" alt="Imagen del resumen anual">
+  <img src="docs/capturas/13-top5.jpg" width="200" alt="Mi top 5">
+  <img src="docs/capturas/15-ticket-top5.jpg" width="200" alt="Boleta Mi top 5 para historias">
 </p>
 
 Más capturas (con datos ficticios): [docs/CAPTURAS.md](docs/CAPTURAS.md).
@@ -74,6 +78,9 @@ Para probar sin datos reales: [ejemplos/completos_ejemplo.csv](ejemplos/completo
 | `hambre_nivel`, `hambre_texto` | 1 = nada … 5 = me comería toda la olla |
 | `latitud`, `longitud`, `precision_gps_m`, `origen_coordenadas` | `gps`, `foto_exif` o `manual` |
 | `foto_archivo`, `notas` | |
+
+El ZIP también trae **`resenas_locales.csv`**: los locales que calificaste sin registrar un completo
+(`id`, `fecha`, `nombre_local`, `puntuacion`, `latitud`, `longitud`, `comentario`).
 
 ## 🍴 Haz tu propia copia (fork)
 

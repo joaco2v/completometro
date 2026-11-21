@@ -6,6 +6,18 @@
 import type { DatosRegistro, Registro } from '../dominio/modelo';
 import type { Ajustes } from '../dominio/ajustes';
 
+import type { DatosResena, ResenaLocal } from '../dominio/resenas';
+
+/** Reseñas de locales (sin completo). Mismo modelo de sincronización que los registros. */
+export interface ResenaRepository {
+  listar(opciones?: { incluirEliminados?: boolean }): Promise<ResenaLocal[]>;
+  /** Crea o actualiza la reseña de ese local (una por local). */
+  guardar(datos: DatosResena): Promise<ResenaLocal>;
+  eliminar(id: string): Promise<void>;
+  fusionar(resenas: ResenaLocal[]): Promise<ResultadoFusion>;
+  suscribir(alCambiar: () => void): () => void;
+}
+
 export interface ResultadoFusion {
   nuevos: number;
   actualizados: number;
@@ -69,7 +81,7 @@ export interface AlmacenNube {
 /** Cambio pendiente de enviar al backend (hoy se acumula y no se envía a ningún lado). */
 export interface CambioPendiente {
   seq?: number;
-  entidad: 'registro';
+  entidad: 'registro' | 'resena';
   entidad_id: string;
   operacion: 'crear' | 'actualizar' | 'eliminar' | 'importar';
   fecha: string;

@@ -20,6 +20,10 @@ export interface Ajustes {
   bannerAnualCerrado: number[];
   /** Respaldo automático en Google Drive. */
   drive: EstadoDrive;
+  /** "Mi top 5": automático (según notas) o elegido a mano. */
+  modoTop: 'auto' | 'personalizado';
+  /** Nombres de locales del top personalizado, en orden. */
+  topPersonalizado: string[];
 }
 
 export interface EstadoDrive {
@@ -40,6 +44,8 @@ export function ajustesPorDefecto(dispositivo_id: string): Ajustes {
     avisoRespaldoPospuestoHasta: null,
     bannerAnualCerrado: [],
     drive: { conectado: false, correo: null, ultimaSync: null },
+    modoTop: 'auto',
+    topPersonalizado: [],
   };
 }
 

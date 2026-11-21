@@ -1,6 +1,6 @@
 # Capturas del Completómetro
 
-Capturas de la versión 0.3.0 en tamaño de teléfono, tomadas durante las pruebas con **datos ficticios**
+Capturas de la versión 0.4.0 en tamaño de teléfono, tomadas durante las pruebas con **datos ficticios**
 (los registros, locales y nombres son de ejemplo).
 
 ## Inicio y registro
@@ -21,6 +21,18 @@ Capturas de la versión 0.3.0 en tamaño de teléfono, tomadas durante las prueb
 |:-:|:-:|:-:|
 | <img src="capturas/06-dashboard.jpg" width="240" alt="Dashboard con total del año y gráfico de completos por mes"> | <img src="capturas/07-hambre-y-emociones.jpg" width="240" alt="Hambre promedio por mes y mapa de calor de emociones"> | <img src="capturas/08-mapa-y-ranking.jpg" width="240" alt="Mapa de completos y ranking de locales"> |
 | Gráficos por semana o por mes. | Hambre promedio y emociones por periodo. | Mapa (OpenStreetMap) y ranking con nota promedio. |
+
+## Mi top 5
+
+| Ranking | Reseñas y mapa de calor |
+|:-:|:-:|
+| <img src="capturas/13-top5.jpg" width="240" alt="Pestaña Mi top 5 ordenada por nota"> | <img src="capturas/14-resenas-y-mapa-calor.jpg" width="240" alt="Calificar un local sin completo y mapa de calor"> |
+| Según tus notas (desempata por visitas) o personalizado. | Califica locales sin registrar un completo; el mapa de calor muestra dónde comes más. |
+
+| Boleta "Mi top 5" | Plantilla "Mi completo favorito" |
+|:-:|:-:|
+| <img src="capturas/15-ticket-top5.jpg" width="240" alt="Imagen estilo boleta con el top 5 de locales"> | <img src="capturas/16-plantilla-favorito.jpg" width="240" alt="Plantilla en blanco estilo boleta para rellenar en Instagram"> |
+| Para compartir en historias. Si faltan locales, deja líneas en blanco. | En blanco: pon tu foto, escribe sobre las líneas y etiqueta al local. |
 
 ## Resumen del año
 

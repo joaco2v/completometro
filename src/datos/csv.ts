@@ -8,6 +8,7 @@
  */
 import { buscarEmocion, nivelHambre, type Emocion } from '../dominio/emociones';
 import type { RegistroConAcumulado } from '../dominio/modelo';
+import type { ResenaLocal } from '../dominio/resenas';
 import { claveDia, claveSemana } from '../dominio/fechas';
 
 export const COLUMNAS_CSV = [
@@ -72,6 +73,22 @@ export function generarCsv(
 ): string {
   const lineas = [COLUMNAS_CSV.join(','), ...registros.map((r) => filaCsv(r, personalizadas, fotoArchivo(r)).join(','))];
   return BOM + lineas.join('\r\n') + '\r\n';
+}
+
+export const COLUMNAS_CSV_RESENAS = ['id', 'fecha', 'nombre_local', 'puntuacion', 'latitud', 'longitud', 'comentario'] as const;
+
+/** CSV de reseñas de locales (calificados sin registrar un completo). */
+export function generarCsvResenas(resenas: readonly ResenaLocal[]): string {
+  const filas = resenas.map((s) => [
+    celda(s.id),
+    celda(s.fecha),
+    celda(s.nombre_local, true),
+    numero(s.puntuacion),
+    numero(s.latitud, 6),
+    numero(s.longitud, 6),
+    celda(s.comentario, true),
+  ].join(','));
+  return BOM + [COLUMNAS_CSV_RESENAS.join(','), ...filas].join('\r\n') + '\r\n';
 }
 
 /** Extensión de archivo para un tipo MIME de imagen. */

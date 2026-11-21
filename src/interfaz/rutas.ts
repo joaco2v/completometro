@@ -1,8 +1,8 @@
 /** Navegación simple por hash (#/historial), compatible con GitHub Pages sin configuración. */
 import { useEffect, useState } from 'preact/hooks';
 
-export type Ruta = 'inicio' | 'historial' | 'dashboard' | 'ajustes';
-const RUTAS: Ruta[] = ['inicio', 'historial', 'dashboard', 'ajustes'];
+export type Ruta = 'inicio' | 'historial' | 'top' | 'dashboard' | 'ajustes';
+const RUTAS: Ruta[] = ['inicio', 'historial', 'top', 'dashboard', 'ajustes'];
 
 function leer(): { ruta: Ruta; seccion: string | null } {
   const [r, s] = location.hash.replace(/^#\/?/, '').split('/');

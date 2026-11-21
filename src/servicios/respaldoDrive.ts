@@ -137,11 +137,13 @@ export function iniciarRespaldoDrive() {
   };
   leerAjustes();
   datos.ajustes.suscribir(leerAjustes);
-  datos.repo.suscribir(() => {
+  const programar = () => {
     if (!conectadoCache) return;
     clearTimeout(temporizador);
     temporizador = setTimeout(() => sincronizar().catch(() => undefined), 3000);
-  });
+  };
+  datos.repo.suscribir(programar);
+  datos.resenas.suscribir(programar);
   window.addEventListener('online', () => conectadoCache && sincronizar().catch(() => undefined));
 }
 

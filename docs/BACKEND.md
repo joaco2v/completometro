@@ -148,10 +148,21 @@ Cuerpo binario (`Content-Type: image/jpeg`). Idempotente. Respuesta `204`.
 
 Devuelve la imagen o `404`.
 
+### `GET /resenas?desde=<marca>` · `POST /resenas/lote`
+
+Igual que los registros, para las **reseñas de locales** (calificar un local sin registrar un completo).
+Misma regla de "gana el último cambio" y borrado lógico. Una reseña por local.
+
+```json
+{ "id": "…", "nombre_local": "Fuente Alemana", "puntuacion": 9, "latitud": -33.4372, "longitud": -70.6366,
+  "comentario": "El mejor as", "fecha": "2026-10-10T14:00:00-03:00",
+  "creado_en": "…", "actualizado_en": "…", "eliminado_en": null, "dispositivo_id": "…", "estado_sync": "pendiente", "version_esquema": 2 }
+```
+
 ### `GET /ajustes` · `PUT /ajustes`
 
 ```json
-{ "contadoresIniciales": { "2026": 37 }, "emocionesPersonalizadas": [ { "id": "p_bajoneado", "emoji": "🫠", "nombre": "Bajoneado" } ], "actualizado_en": "…" }
+{ "contadoresIniciales": { "2026": 37 }, "emocionesPersonalizadas": [ { "id": "p_bajoneado", "emoji": "🫠", "nombre": "Bajoneado" } ], "modoTop": "auto", "topPersonalizado": [], "actualizado_en": "…" }
 ```
 
 ### Errores

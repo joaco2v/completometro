@@ -15,7 +15,7 @@ export const config = {
   backendUrl,
   /** ID de cliente OAuth de Google para el respaldo en Drive. Sin él, la opción no aparece. Ver docs/GOOGLE_DRIVE.md */
   googleClientId: env('VITE_GOOGLE_CLIENT_ID'),
-  version: '0.3.0',
+  version: '0.4.0',
   repositorio: 'https://github.com/joaco2v/completometro',
   /** Si haces un fork, cambia estos datos por los tuyos. */
   autor: {
