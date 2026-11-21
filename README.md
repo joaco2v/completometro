@@ -28,7 +28,7 @@ gratis, sin tiendas de apps, sin cuentas y **sin internet**. Tus datos se quedan
   **"Cambiar (me olvidé de anotarlo)"** para ponerle la fecha y hora reales.
 - La primera vez, el teléfono pedirá permiso de **ubicación**. Si lo niegas, puedes marcar el lugar en el mapa.
 
-### Respaldo (importante)
+### Respaldo (Ultra importante)
 
 Los datos viven solo en tu teléfono. En **Ajustes › Respaldo** tienes la guía paso a paso.
 Lo más cómodo es **Conectar con Google**: la app guarda sola una copia privada en tu Google Drive
