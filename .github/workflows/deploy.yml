@@ -27,8 +27,9 @@ jobs:
       - run: npm test
       - run: npm run build
         env:
-          # Variable del repositorio (Settings › Secrets and variables › Actions › Variables). Ver docs/GOOGLE_DRIVE.md
-          VITE_GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
+          # Secreto del repositorio (Settings › Secrets and variables › Actions › Secrets): no queda en el
+          # código ni en los registros de Actions. Ver docs/GOOGLE_DRIVE.md
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

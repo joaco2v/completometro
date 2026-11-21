@@ -4,9 +4,14 @@ El respaldo en Drive necesita un **ID de cliente OAuth** de Google. Es gratis y 
 por cada publicación de la app (si haces un fork, creas el tuyo). Sin este ID, la app funciona igual,
 pero la opción de Drive no aparece.
 
-> El ID de cliente **no es secreto**: viaja dentro de la app. Lo que protege a cada persona es que
-> Google solo entrega permisos a la página autorizada (tu dirección de GitHub Pages) y que la app
-> solo pide acceso a su carpeta oculta (`drive.appdata`).
+> **Solo se usa el ID de cliente.** Nunca pongas el "secreto del cliente" (client secret) ni una
+> clave de API en este proyecto: no hacen falta.
+>
+> El ID se guarda como **secreto de GitHub Actions**, así que no aparece en el código ni en los
+> registros de Actions. Ojo: igual viaja dentro de la app publicada (el navegador lo necesita para
+> abrir la ventana de Google), por lo que alguien con conocimientos podría verlo. Eso es normal y
+> seguro: Google solo entrega permisos a los orígenes autorizados (tu dirección de GitHub Pages),
+> y la app solo pide acceso a su carpeta oculta (`drive.appdata`).
 
 ## 1. Crear el proyecto (5 minutos)
 
@@ -39,16 +44,18 @@ pero la opción de Drive no aparece.
 ## 4. Ponerlo en la app
 
 **Publicación en GitHub Pages**: en tu repositorio › **Settings** › **Secrets and variables** › **Actions**
-› pestaña **Variables** › **New repository variable**:
+› pestaña **Secrets** › **New repository secret**:
 
 - Nombre: `GOOGLE_CLIENT_ID`
 - Valor: el ID copiado
 
+O con GitHub CLI, desde la carpeta del proyecto (te pide el valor sin mostrarlo en pantalla):
+`gh secret set GOOGLE_CLIENT_ID`
+
 Luego **Actions** › **Publicar en GitHub Pages** › **Run workflow** (o haz cualquier commit).
 
-Con GitHub CLI: `gh variable set GOOGLE_CLIENT_ID --body "<id>"`.
-
 **En tu computador**: crea `.env` con `VITE_GOOGLE_CLIENT_ID=<id>` y usa `npm run dev`.
+El archivo `.env` está en `.gitignore`, así que nunca se sube a GitHub.
 
 ## Cómo funciona (resumen técnico)
 
