@@ -207,11 +207,12 @@ export function Ajustes({ seccion }: { seccion: string | null }) {
         <p>
           En 2025, un amigo usó un grupo de WhatsApp consigo mismo para anotar cada completo que se comía,
           y a fin de año publicó cuántos se había comido. Le copié la idea y empecé a hacer lo mismo.
+          <strong> ¡Gracias, Gustavo!</strong>
         </p>
         <p>
           Se lo conté a Valentina, una amiga, y me dijo que podía agregarle métricas e insights para tener
           un análisis muy bacán de todos esos completos. De ahí salió el Completómetro.
-          <strong> ¡Gracias, Vabe! 💛</strong>
+          <strong> ¡Gracias, Vabe!</strong>
         </p>
 
         <h4>¿Quieres apoyar?</h4>

@@ -124,9 +124,9 @@ src/
 ## Cómo nació
 
 En 2025, un amigo usó un grupo de WhatsApp consigo mismo para anotar cada completo que se comía, y a
-fin de año publicó el total. Le copié la idea y empecé a hacer lo mismo. Se lo conté a Valentina, una
+fin de año publicó el total. Le copié la idea y empecé a hacer lo mismo (¡gracias, Gustavo!). Se lo conté a Valentina, una
 amiga, y me dijo que podía agregarle métricas e insights para tener un análisis muy bacán. De ahí salió
-el Completómetro. ¡Gracias, Vabe! 💛
+el Completómetro. ¡Gracias, Vabe!
 
 ## ¿Quieres apoyar?
 
