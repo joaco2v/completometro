@@ -64,6 +64,7 @@ En modo Prueba solo entran las cuentas agregadas como usuarios de prueba (hasta 
 1. En Google Cloud › **Google Auth Platform** › **Desarrollo de la marca** (o "Pantalla de consentimiento"), completa:
    - **Página principal de la app:** `https://<tu-usuario>.github.io/completometro/`
    - **Política de privacidad:** `https://<tu-usuario>.github.io/completometro/privacidad.html`
+   - **Condiciones del servicio (opcional):** `https://<tu-usuario>.github.io/completometro/terminos.html`
    - **Dominios autorizados:** `<tu-usuario>.github.io`
    - Correo de contacto del desarrollador.
 2. **Público** › **Publicar app** › **Confirmar**. El estado cambia a **"En producción"**.

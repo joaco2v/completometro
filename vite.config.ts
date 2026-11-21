@@ -33,7 +33,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         navigateFallback: 'index.html',
         // La política de privacidad es una página propia: no debe reemplazarse por la app.
-        navigateFallbackDenylist: [/privacidad\.html$/],
+        navigateFallbackDenylist: [/privacidad\.html$/, /terminos\.html$/],
         runtimeCaching: [
           {
             // Teselas del mapa: se guardan las que ya viste, para verlas sin internet.

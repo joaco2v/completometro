@@ -198,4 +198,6 @@ OpenStreetMap, las sugerencias de locales (se envía lo que escribes en "Nombre 
 ubicación aproximada al servicio Photon de OpenStreetMap) y, si lo conectas, tu Google Drive. Tus datos salen del teléfono solo cuando tú exportas o respaldas.
 
 Política de privacidad completa: <https://joaco2v.github.io/completometro/privacidad.html>
+Términos del servicio: <https://joaco2v.github.io/completometro/terminos.html>
+([public/terminos.html](public/terminos.html))
 (el archivo está en [public/privacidad.html](public/privacidad.html); si haces un fork, cambia el autor y los enlaces).
