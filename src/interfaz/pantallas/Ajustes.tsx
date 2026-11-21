@@ -201,7 +201,7 @@ export function Ajustes({ seccion }: { seccion: string | null }) {
         </div>
         <p>
           Una app para llevar la cuenta de todos los completos que te comes en el año: dónde, cuántos,
-          cómo te sentías y cuánta hambre tenías. Al final del año, tu resumen para compartir. 🌭
+          cómo te sentías y cuánta hambre tenías. Al final del año, tendrás tu resumen completero para compartir. 🌭
         </p>
         <h4>¿Cómo nació?</h4>
         <p>
