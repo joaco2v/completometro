@@ -22,6 +22,10 @@ export interface LocalTop {
   notas: number;
   /** Tiene una reseña sin completo. */
   resenado: boolean;
+  /** La nota la escribiste a mano en el top personalizado (reemplaza al promedio). */
+  notaPersonalizada?: boolean;
+  /** Si hay nota a mano: el promedio real (para mostrarlo como referencia). */
+  notaPromedio?: number | null;
   latitud: number | null;
   longitud: number | null;
 }
@@ -85,7 +89,12 @@ export function rankingPorNota(registros: readonly Registro[], resenas: readonly
  * Top personalizado: toma los nombres en el orden elegido y les agrega sus datos (si existen).
  * Un nombre sin datos igual aparece (por ejemplo, un local que aún no registras).
  */
-export function topPersonalizado(nombres: readonly string[], registros: readonly Registro[], resenas: readonly ResenaLocal[]): LocalTop[] {
+export function topPersonalizado(
+  nombres: readonly string[],
+  registros: readonly Registro[],
+  resenas: readonly ResenaLocal[],
+  notasManuales: Readonly<Record<string, number>> = {},
+): LocalTop[] {
   const porClave = new Map(locales(registros, resenas).map((l) => [l.clave, l]));
   const vistos = new Set<string>();
   const top: LocalTop[] = [];
@@ -94,9 +103,25 @@ export function topPersonalizado(nombres: readonly string[], registros: readonly
     const k = claveLocal(nombre);
     if (!nombre || vistos.has(k)) continue;
     vistos.add(k);
-    top.push(porClave.get(k) ?? { clave: k, nombre, nota: null, visitas: 0, completos: 0, notas: 0, resenado: false, latitud: null, longitud: null });
+    const base = porClave.get(k) ?? { clave: k, nombre, nota: null, visitas: 0, completos: 0, notas: 0, resenado: false, latitud: null, longitud: null };
+    const manual = notaValida(notasManuales[k]);
+    top.push(manual != null ? { ...base, nota: manual, notaPersonalizada: true, notaPromedio: base.nota } : base);
   }
   return top.slice(0, TAMANO_TOP);
+}
+
+/** Una nota válida del top: entre 1 y 10, con un decimal. */
+export function notaValida(n: unknown): number | null {
+  const v = Number(n);
+  if (!Number.isFinite(v) || v < 1 || v > 10) return null;
+  return Math.round(v * 10) / 10;
+}
+
+/** Lee una nota escrita por la persona ("8,7", "8.7", "9"). Devuelve null si está vacía o no es válida. */
+export function leerNota(texto: string): number | null {
+  const t = texto.trim().replace(',', '.');
+  if (!t || !/^\d{1,2}(\.\d*)?$/.test(t)) return null;
+  return notaValida(Number(t));
 }
 
 export const TAMANO_TOP = 5;

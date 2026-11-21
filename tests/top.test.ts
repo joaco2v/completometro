@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto';
 import { describe, expect, it } from 'vitest';
 import { reg } from './ayuda';
-import { locales, mover, puntosCalor, rankingPorNota, topPersonalizado } from '../src/dominio/top';
+import { leerNota, locales, mover, puntosCalor, rankingPorNota, topPersonalizado } from '../src/dominio/top';
 import type { ResenaLocal } from '../src/dominio/resenas';
 import { normalizarResena } from '../src/dominio/resenas';
 import { crearDatos } from '../src/datos';
@@ -59,6 +59,26 @@ describe('top personalizado', () => {
     expect(t[0].nota).toBeNull();
   });
 
+  it('la nota a mano reemplaza al promedio y se redondea a un decimal', () => {
+    const rs = [reg(d(1, 1), { nombre_local: 'Dominó', puntuacion: 8 })];
+    const t = topPersonalizado(['Dominó', 'Local Nuevo', 'Otro'], rs, [], { domino: 9.24, 'local nuevo': 7.5, otro: 15 });
+    expect(t[0]).toMatchObject({ nota: 9.2, notaPersonalizada: true, visitas: 1 });
+    expect(t[1]).toMatchObject({ nota: 7.5, notaPersonalizada: true });
+    expect(t[2]).toMatchObject({ nota: null }); // 15 no es válida
+    expect(t[2].notaPersonalizada).toBeUndefined();
+  });
+
+  it('lee notas escritas con coma o punto', () => {
+    expect(leerNota('8,7')).toBe(8.7);
+    expect(leerNota('8.75')).toBe(8.8);
+    expect(leerNota('10')).toBe(10);
+    expect(leerNota(' 9 ')).toBe(9);
+    expect(leerNota('0,5')).toBeNull();
+    expect(leerNota('11')).toBeNull();
+    expect(leerNota('abc')).toBeNull();
+    expect(leerNota('')).toBeNull();
+  });
+
   it('mover sube y baja', () => {
     expect(mover(['a', 'b', 'c'], 2, 1)).toEqual(['a', 'c', 'b']);
     expect(mover(['a', 'b', 'c'], 0, -1)).toEqual(['a', 'b', 'c']);
@@ -99,14 +119,14 @@ describe('reseñas en la base y en los respaldos', () => {
     const origen = crearDatos('resenas-2');
     await origen.repo.crear({ ...registroVacio(), nombre_local: 'Dominó', puntuacion: 8 });
     await origen.resenas.guardar({ nombre_local: 'Fuente Alemana', puntuacion: 10, latitud: -33.43, longitud: -70.63, comentario: null, fecha: '2026-03-01T12:00:00-03:00' });
-    await origen.ajustes.guardar({ modoTop: 'personalizado', topPersonalizado: ['Fuente Alemana', 'Dominó'] });
+    await origen.ajustes.guardar({ modoTop: 'personalizado', topPersonalizado: ['Fuente Alemana', 'Dominó'], notasTopPersonalizado: { domino: 8.7 } });
     const zip = await exportarZip(origen);
 
     const destino = crearDatos('resenas-3');
     const r = await importarArchivo(zip, destino);
     expect(r).toMatchObject({ nuevos: 1, resenas: 1 });
     expect((await destino.resenas.listar())[0]).toMatchObject({ nombre_local: 'Fuente Alemana', puntuacion: 10 });
-    expect(await destino.ajustes.leer()).toMatchObject({ modoTop: 'personalizado', topPersonalizado: ['Fuente Alemana', 'Dominó'] });
+    expect(await destino.ajustes.leer()).toMatchObject({ modoTop: 'personalizado', topPersonalizado: ['Fuente Alemana', 'Dominó'], notasTopPersonalizado: { domino: 8.7 } });
 
     const { default: JSZip } = await import('jszip');
     const csv = await (await JSZip.loadAsync(zip)).file('resenas_locales.csv')!.async('string');

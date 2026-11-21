@@ -17,6 +17,7 @@ import { claveDia } from '../dominio/fechas';
 import type { AjustesStore, FotoStorage, RegistroRepository, ResenaRepository } from './contratos';
 import { extension, generarCsv, generarCsvResenas } from './csv';
 import type { ResenaLocal } from '../dominio/resenas';
+import { notaValida } from '../dominio/top';
 
 export const FORMATO = 'completometro-respaldo';
 
@@ -40,6 +41,8 @@ export interface ArchivoRespaldo {
     /** Desde v0.4.0. */
     modoTop?: 'auto' | 'personalizado';
     topPersonalizado?: string[];
+    /** Notas a mano del top personalizado (desde v0.4.1). */
+    notasTopPersonalizado?: Record<string, number>;
   };
   /** Incluye los eliminados (borrado lógico) para que el borrado viaje al otro teléfono. */
   registros: Registro[];
@@ -117,6 +120,7 @@ export async function reunir(d: Dependencias, embeber: boolean) {
       emocionesPersonalizadas: ajustes.emocionesPersonalizadas,
       modoTop: ajustes.modoTop,
       topPersonalizado: ajustes.topPersonalizado,
+      notasTopPersonalizado: ajustes.notasTopPersonalizado,
     },
     registros,
     fotos: fotos.map(({ blob: _b, ...f }) => f),
@@ -180,8 +184,20 @@ export function validarRespaldo(x: unknown): ArchivoRespaldo {
       emocionesPersonalizadas: r.ajustes?.emocionesPersonalizadas ?? [],
       modoTop: r.ajustes?.modoTop,
       topPersonalizado: Array.isArray(r.ajustes?.topPersonalizado) ? r.ajustes.topPersonalizado : undefined,
+      notasTopPersonalizado: limpiarNotas(r.ajustes?.notasTopPersonalizado),
     },
   };
+}
+
+/** Deja solo notas válidas (1 a 10, un decimal). */
+function limpiarNotas(x: unknown): Record<string, number> | undefined {
+  if (!x || typeof x !== 'object') return undefined;
+  const limpio: Record<string, number> = {};
+  for (const [k, v] of Object.entries(x as Record<string, unknown>)) {
+    const n = notaValida(v);
+    if (n != null) limpio[k] = n;
+  }
+  return limpio;
 }
 
 async function esZip(archivo: Blob): Promise<boolean> {
@@ -253,7 +269,11 @@ export async function aplicarRespaldo(
   const emociones = [...actuales.emocionesPersonalizadas, ...respaldo.ajustes.emocionesPersonalizadas.filter((e) => e?.id && !ids.has(e.id))];
   // Top personalizado: si aquí no hay uno, se trae el del respaldo.
   const top = !actuales.topPersonalizado?.length && respaldo.ajustes.topPersonalizado?.length
-    ? { topPersonalizado: respaldo.ajustes.topPersonalizado.slice(0, 5), modoTop: respaldo.ajustes.modoTop ?? actuales.modoTop }
+    ? {
+      topPersonalizado: respaldo.ajustes.topPersonalizado.slice(0, 5),
+      modoTop: respaldo.ajustes.modoTop ?? actuales.modoTop,
+      notasTopPersonalizado: respaldo.ajustes.notasTopPersonalizado ?? {},
+    }
     : {};
   await d.ajustes.guardar({ contadoresIniciales: contadores, emocionesPersonalizadas: emociones, ...top });
 

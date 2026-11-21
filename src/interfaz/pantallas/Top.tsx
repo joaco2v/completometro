@@ -4,7 +4,7 @@ import { datos } from '../../datos';
 import { claveLocal, totalAnio } from '../../dominio/metricas';
 import { aIsoLocal } from '../../dominio/modelo';
 import type { ResenaLocal } from '../../dominio/resenas';
-import { locales, mover, puntosCalor, rankingPorNota, TAMANO_TOP, topPersonalizado, type LocalTop } from '../../dominio/top';
+import { leerNota, locales, mover, puntosCalor, rankingPorNota, TAMANO_TOP, topPersonalizado, type LocalTop } from '../../dominio/top';
 import { dibujarPlantillaFavorito, dibujarTop5 } from '../../servicios/imagenTicket';
 import { useEstado } from '../estado';
 import { decimal, entero, fechaRelativa } from '../formato';
@@ -25,13 +25,38 @@ export function Top() {
   const auto = useMemo(() => rankingPorNota(registros, resenas), [registros, resenas]);
   const todos = useMemo(() => locales(registros, resenas), [registros, resenas]);
   const nombres = ajustes?.topPersonalizado ?? [];
-  const top = modo === 'auto' ? auto.slice(0, TAMANO_TOP) : topPersonalizado(nombres, registros, resenas);
+  const notasManuales = ajustes?.notasTopPersonalizado ?? {};
+  const top = modo === 'auto' ? auto.slice(0, TAMANO_TOP) : topPersonalizado(nombres, registros, resenas, notasManuales);
+  const promedioDe = (clave: string) => todos.find((l) => l.clave === clave)?.nota ?? null;
   const misResenas = useMemo(() => [...resenas].sort((a, b) => b.fecha.localeCompare(a.fecha)), [resenas]);
   const calor = useMemo(() => puntosCalor(registros), [registros]);
 
   if (!ajustes) return null;
 
   const guardarLista = (lista: string[]) => datos.ajustes.guardar({ topPersonalizado: lista.slice(0, TAMANO_TOP) });
+
+  /** Guarda (o borra, si queda vacía) la nota a mano de un local del top personalizado. */
+  const guardarNota = async (clave: string, texto: string) => {
+    const notas = { ...notasManuales };
+    if (!texto.trim()) {
+      delete notas[clave];
+    } else {
+      const n = leerNota(texto);
+      if (n == null) {
+        toast('La nota va de 1 a 10, con un decimal (ej: 8,7)');
+        return false;
+      }
+      notas[clave] = n;
+    }
+    await datos.ajustes.guardar({ notasTopPersonalizado: notas });
+    return true;
+  };
+
+  const quitarDelTop = (i: number) => {
+    const notas = { ...notasManuales };
+    delete notas[top[i].clave];
+    return datos.ajustes.guardar({ topPersonalizado: top.filter((_, j) => j !== i).map((x) => x.nombre), notasTopPersonalizado: notas });
+  };
 
   const cambiarModo = async (m: 'auto' | 'personalizado') => {
     if (m === 'personalizado' && !nombres.length) {
@@ -58,7 +83,7 @@ export function Top() {
       <p class="ayuda">
         {modo === 'auto'
           ? 'Ordenado por la nota promedio de cada local (tus completos y tus reseñas). Si empatan, gana el que más visitas.'
-          : 'Tú eliges el orden. Útil si todavía tienes pocos datos.'}
+          : 'Tú eliges el orden y, si quieres, la nota de cada local (con un decimal, ej: 8,7). Si la dejas vacía, se usa tu promedio.'}
       </p>
 
       <section class="tarjeta">
@@ -76,12 +101,21 @@ export function Top() {
                 <span class="top-cuerpo">
                   <strong>{l.nombre}</strong>
                   <span class="ayuda">{detalleLocal(l)}</span>
+                  {modo === 'personalizado' && (
+                    <NotaManual
+                      key={`nota-${l.clave}-${notasManuales[l.clave] ?? ''}`}
+                      valor={notasManuales[l.clave] ?? null}
+                      promedio={promedioDe(l.clave)}
+                      nombre={l.nombre}
+                      alGuardar={(texto) => guardarNota(l.clave, texto)}
+                    />
+                  )}
                 </span>
                 {modo === 'personalizado' ? (
                   <span class="top-acciones">
                     <button type="button" class="boton-icono" aria-label="Subir" disabled={i === 0} onClick={() => guardarLista(mover(top.map((x) => x.nombre), i, i - 1))}>▲</button>
                     <button type="button" class="boton-icono" aria-label="Bajar" disabled={i === top.length - 1} onClick={() => guardarLista(mover(top.map((x) => x.nombre), i, i + 1))}>▼</button>
-                    <button type="button" class="boton-icono" aria-label="Quitar del top" onClick={() => guardarLista(top.filter((_, j) => j !== i).map((x) => x.nombre))}>✕</button>
+                    <button type="button" class="boton-icono" aria-label="Quitar del top" onClick={() => quitarDelTop(i)}>✕</button>
                   </span>
                 ) : (
                   l.nota != null && <span class="top-nota">{decimal(l.nota)}</span>
@@ -192,7 +226,9 @@ export function Top() {
 
 function detalleLocal(l: LocalTop): string {
   const partes = [
-    l.nota != null ? `⭐ ${decimal(l.nota)}` : 'sin nota',
+    l.notaPersonalizada
+      ? (l.notaPromedio != null ? `tu promedio ⭐ ${decimal(l.notaPromedio)}` : null)
+      : l.nota != null ? `⭐ ${decimal(l.nota)}` : 'sin nota',
     l.visitas ? `${entero(l.visitas)} ${l.visitas === 1 ? 'visita' : 'visitas'}` : null,
     l.completos ? `${entero(l.completos)} ${l.completos === 1 ? 'completo' : 'completos'}` : null,
     l.resenado ? 'reseñado' : null,
@@ -292,5 +328,37 @@ function AgregarAlTop({ opciones, alAgregar, alCerrar }: { opciones: string[]; a
         <button type="button" class="boton boton-primario boton-grande" disabled={!nombre.trim()} onClick={() => alAgregar(nombre.trim())}>Agregar</button>
       </div>
     </Modal>
+  );
+}
+
+/** Campo para escribir la nota a mano (1 a 10, un decimal). Se guarda al salir del campo o con Enter. */
+function NotaManual({ valor, promedio, nombre, alGuardar }: {
+  valor: number | null;
+  promedio: number | null;
+  nombre: string;
+  alGuardar: (texto: string) => Promise<boolean>;
+}) {
+  const [texto, setTexto] = useState(valor != null ? decimal(valor) : '');
+  const guardar = async () => {
+    const actual = valor != null ? decimal(valor) : '';
+    if (texto.trim() === actual) return;
+    if (!(await alGuardar(texto))) setTexto(actual);
+  };
+  return (
+    <label class="nota-manual">
+      <span>✍️ Tu nota</span>
+      <input
+        type="text"
+        inputMode="decimal"
+        maxLength={4}
+        value={texto}
+        placeholder={promedio != null ? decimal(promedio) : '—'}
+        aria-label={`Tu nota para ${nombre}, de 1 a 10`}
+        onInput={(e) => setTexto(e.currentTarget.value)}
+        onBlur={guardar}
+        onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()}
+      />
+      <span>/ 10</span>
+    </label>
   );
 }

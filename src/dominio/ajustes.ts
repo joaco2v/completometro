@@ -24,6 +24,8 @@ export interface Ajustes {
   modoTop: 'auto' | 'personalizado';
   /** Nombres de locales del top personalizado, en orden. */
   topPersonalizado: string[];
+  /** Notas a mano del top personalizado (1 decimal), por clave de local: { "domino": 8.7 }. */
+  notasTopPersonalizado: Record<string, number>;
 }
 
 export interface EstadoDrive {
@@ -46,6 +48,7 @@ export function ajustesPorDefecto(dispositivo_id: string): Ajustes {
     drive: { conectado: false, correo: null, ultimaSync: null },
     modoTop: 'auto',
     topPersonalizado: [],
+    notasTopPersonalizado: {},
   };
 }
 

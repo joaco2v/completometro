@@ -266,6 +266,9 @@ textarea { resize: vertical; }
 .top-acciones { display: flex; gap: 2px; flex: none; }
 .top-acciones .boton-icono { padding: 6px; font-size: 0.95rem; }
 .lista-top-completa { margin-top: 10px; }
+.nota-manual { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 0.85rem; color: var(--texto-suave); }
+.nota-manual input { width: 64px; padding: 6px 8px; text-align: center; font-weight: 800; font-size: 16px; color: var(--texto); }
+.nota-manual input::placeholder { color: var(--texto-suave); font-weight: 400; opacity: 0.6; }
 .lista-top-completa .top-pos { font-size: 1rem; color: var(--texto-suave); }
 .enlace-fila { all: unset; cursor: pointer; flex: 1; min-width: 0; }
 .plantillas-botones { display: flex; flex-wrap: wrap; gap: 8px; }
