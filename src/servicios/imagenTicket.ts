@@ -323,3 +323,71 @@ export async function dibujarPlantillaFavorito(ahora = new Date()): Promise<File
   pieEtiqueta(ctx);
   return aArchivo(canvas, 'mi-completo-favorito.png');
 }
+
+/**
+ * "Mi contador" de completos del año. Pensada también para quien recién empieza a usar la app:
+ * si `numero` es null, deja un recuadro en blanco para escribir la cifra en Instagram.
+ */
+export async function dibujarContador(numero: number | null, ahora = new Date()): Promise<File> {
+  const { canvas, ctx } = lienzo();
+  papel(ctx);
+  const izq = TX + 60;
+  const der = TX + TW - 60;
+  const anio = ahora.getFullYear();
+
+  encabezado(ctx, TY + 90);
+  lineaPunteada(ctx, TY + 160);
+  texto(ctx, `BOLETA N° ${anio}-0001`, izq, TY + 210, { tam: 28 });
+  texto(ctx, fechaBoleta(ahora), der, TY + 210, { tam: 28, alinear: 'right' });
+  lineaPunteada(ctx, TY + 240);
+
+  texto(ctx, 'MI CONTADOR', W / 2, TY + 340, { tam: 88, peso: 800, alinear: 'center', fuente: SANS });
+  texto(ctx, 'DE COMPLETOS', W / 2, TY + 400, { tam: 40, peso: 700, alinear: 'center' });
+  lineaPunteada(ctx, TY + 450);
+
+  // La cifra (o el recuadro para escribirla)
+  const cajaY = TY + 500;
+  const cajaH = 420;
+  if (numero != null) {
+    const cifra = numero.toLocaleString('es-CL');
+    let tam = 340;
+    do {
+      ctx.font = `900 ${tam}px ${SANS}`;
+    } while (ctx.measureText(cifra).width > TW - 180 && (tam -= 10) > 80);
+    texto(ctx, cifra, W / 2, cajaY + cajaH / 2 + tam * 0.36, { tam, peso: 900, alinear: 'center', fuente: SANS, color: ROJO });
+  } else {
+    ctx.save();
+    ctx.strokeStyle = TINTA_SUAVE;
+    ctx.lineWidth = 4;
+    ctx.setLineDash([18, 12]);
+    ctx.beginPath();
+    ctx.roundRect(izq + 60, cajaY + 20, der - izq - 120, cajaH - 40, 28);
+    ctx.stroke();
+    ctx.restore();
+    texto(ctx, '✍️', W / 2, cajaY + cajaH / 2 - 10, { tam: 80, alinear: 'center', fuente: SANS });
+    texto(ctx, 'ESCRIBE AQUÍ TU NÚMERO', W / 2, cajaY + cajaH / 2 + 70, { tam: 30, peso: 700, alinear: 'center', color: TINTA_SUAVE });
+  }
+  texto(ctx, `COMPLETOS EN ${anio}`, W / 2, cajaY + cajaH + 50, { tam: 44, peso: 800, alinear: 'center', fuente: SANS });
+  timbre(ctx, der - 40, cajaY + 40, 'CONTEO', 'OFICIAL', 0.72);
+
+  lineaPunteada(ctx, cajaY + cajaH + 100);
+  const fila = (etiqueta: string, y: number, valor?: string) => {
+    texto(ctx, etiqueta, izq, y, { tam: 32, peso: 700 });
+    if (valor) {
+      texto(ctx, valor, der, y, { tam: 32, peso: 700, alinear: 'right' });
+    } else {
+      ctx.font = `700 32px ${MONO}`;
+      lineaEscribir(ctx, izq + ctx.measureText(etiqueta).width + 20, der, y + 6);
+    }
+  };
+  const yFilas = cajaY + cajaH + 165;
+  fila(`MI META ${anio}:`, yFilas);
+  fila('MI FAVORITO:', yFilas + 70);
+  lineaPunteada(ctx, yFilas + 115);
+
+  codigoBarras(ctx, yFilas + 145, `${numero ?? 'blanco'}-${anio}`);
+  texto(ctx, '¿Y TÚ, CUÁNTOS LLEVAS?', W / 2, TY + TH - 75, { tam: 32, peso: 700, alinear: 'center' });
+
+  pieEtiqueta(ctx);
+  return aArchivo(canvas, numero != null ? `mi-contador-${anio}.png` : `contador-en-blanco-${anio}.png`);
+}

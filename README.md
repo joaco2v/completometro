@@ -12,8 +12,8 @@ gratis, sin tiendas de apps, sin cuentas y **sin internet**. Tus datos se quedan
 - **Mi top 5** de locales: según tus notas (si empatan, gana el más visitado) o armado a mano.
   Puedes calificar un local sin registrar un completo, y ver un mapa de calor de dónde comes más.
 - **Resumen del año** para compartir en historias de Instagram (banner desde el 31 de diciembre).
-- Plantillas estilo boleta retro para historias: **"Mi top 5"** y **"Mi completo favorito"** (en blanco,
-  para rellenar y etiquetar al local).
+- Plantillas estilo boleta retro para historias: **"Mi top 5"**, **"Mi completo favorito"** (en blanco,
+  para rellenar y etiquetar al local) y **"Mi contador"** (con tu número o en blanco, ideal si recién empiezas).
 - Exporta a **CSV/ZIP para Power BI o Excel** y respalda en Drive, iCloud, WhatsApp o correo.
 
 <p align="center">

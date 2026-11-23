@@ -34,6 +34,11 @@ Capturas de la versión 0.4.0 en tamaño de teléfono, tomadas durante las prueb
 | <img src="capturas/15-ticket-top5.jpg" width="240" alt="Imagen estilo boleta con el top 5 de locales"> | <img src="capturas/16-plantilla-favorito.jpg" width="240" alt="Plantilla en blanco estilo boleta para rellenar en Instagram"> |
 | Para compartir en historias. Si faltan locales, deja líneas en blanco. | En blanco: pon tu foto, escribe sobre las líneas y etiqueta al local. |
 
+| Boleta "Mi contador" | "Mi contador" en blanco |
+|:-:|:-:|
+| <img src="capturas/17-contador.jpg" width="240" alt="Plantilla Mi contador con el número de completos"> | <img src="capturas/18-contador-en-blanco.jpg" width="240" alt="Plantilla Mi contador en blanco para escribir el número en Instagram"> |
+| Con tu total del año (o el número que escribas). | Para quien recién empieza: el número se escribe en Instagram. |
+
 ## Resumen del año
 
 | En la app | Imagen para historias de Instagram |

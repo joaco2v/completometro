@@ -5,7 +5,7 @@ import { claveLocal, totalAnio } from '../../dominio/metricas';
 import { aIsoLocal } from '../../dominio/modelo';
 import type { ResenaLocal } from '../../dominio/resenas';
 import { leerNota, locales, mover, puntosCalor, rankingPorNota, TAMANO_TOP, topPersonalizado, type LocalTop } from '../../dominio/top';
-import { dibujarPlantillaFavorito, dibujarTop5 } from '../../servicios/imagenTicket';
+import { dibujarContador, dibujarPlantillaFavorito, dibujarTop5 } from '../../servicios/imagenTicket';
 import { useEstado } from '../estado';
 import { decimal, entero, fechaRelativa } from '../formato';
 import { BuscadorLocal } from '../componentes/BuscadorLocal';
@@ -19,7 +19,9 @@ export function Top() {
   const { registros, resenas, ajustes, ahora, toast } = useEstado();
   const [calificando, setCalificando] = useState<ResenaLocal | 'nueva' | null>(null);
   const [agregando, setAgregando] = useState(false);
-  const [imagen, setImagen] = useState<'top' | 'favorito' | null>(null);
+  const [imagen, setImagen] = useState<'top' | 'favorito' | 'contador' | null>(null);
+  /** Número elegido para la plantilla "Mi contador" (null = en blanco). undefined = aún no se elige. */
+  const [numeroContador, setNumeroContador] = useState<number | null | undefined>(undefined);
 
   const modo = ajustes?.modoTop ?? 'auto';
   const auto = useMemo(() => rankingPorNota(registros, resenas), [registros, resenas]);
@@ -166,7 +168,9 @@ export function Top() {
         <div class="plantillas-botones">
           <button type="button" class="boton" onClick={() => setImagen('top')}>🧾 Mi top 5</button>
           <button type="button" class="boton" onClick={() => setImagen('favorito')}>⭐ Mi completo favorito</button>
+          <button type="button" class="boton" onClick={() => { setNumeroContador(undefined); setImagen('contador'); }}>🔢 Mi contador</button>
         </div>
+        <p class="ayuda">"Mi contador" sirve aunque recién empieces: pones cuántos llevas o lo dejas en blanco para escribirlo en Instagram.</p>
       </section>
 
       {todos.length > TAMANO_TOP && (
@@ -209,6 +213,22 @@ export function Top() {
           textoCompartir={`Mi top 5 de completos 🌭 ${top.map((l, i) => `${i + 1}. ${l.nombre}`).join(' · ')}`}
           ayuda={top.length < TAMANO_TOP ? 'Los puestos vacíos quedan con una línea para que los completes en Instagram.' : undefined}
           alCerrar={() => setImagen(null)}
+        />
+      )}
+      {imagen === 'contador' && numeroContador === undefined && (
+        <ElegirContador
+          sugerido={totalAnio(registros, ahora.getFullYear(), ajustes.contadoresIniciales)}
+          alElegir={setNumeroContador}
+          alCerrar={() => setImagen(null)}
+        />
+      )}
+      {imagen === 'contador' && numeroContador !== undefined && (
+        <VistaImagen
+          titulo="Mi contador"
+          generar={() => dibujarContador(numeroContador)}
+          textoCompartir={numeroContador != null ? `Llevo ${numeroContador} completos este ${ahora.getFullYear()} 🌭` : `Mi contador de completos ${ahora.getFullYear()} 🌭`}
+          ayuda={numeroContador == null ? 'En Instagram, escribe tu número en el recuadro con la herramienta de texto.' : undefined}
+          alCerrar={() => { setImagen(null); setNumeroContador(undefined); }}
         />
       )}
       {imagen === 'favorito' && (
@@ -360,5 +380,36 @@ function NotaManual({ valor, promedio, nombre, alGuardar }: {
       />
       <span>/ 10</span>
     </label>
+  );
+}
+/** Antes de armar "Mi contador": elegir el número o dejarlo en blanco. */
+function ElegirContador({ sugerido, alElegir, alCerrar }: { sugerido: number; alElegir: (n: number | null) => void; alCerrar: () => void }) {
+  const [texto, setTexto] = useState(sugerido > 0 ? String(sugerido) : '');
+  const n = Number(texto.replace(/\D/g, ''));
+  const valido = texto.trim() !== '' && Number.isFinite(n) && n >= 0 && n <= 99999;
+  return (
+    <Modal titulo="Mi contador" alCerrar={alCerrar}>
+      <div class="formulario">
+        <p>¿Cuántos completos llevas este año?</p>
+        <p class="ayuda">
+          {sugerido > 0
+            ? `Según la app llevas ${entero(sugerido)}. Puedes cambiarlo si quieres.`
+            : 'Si recién empiezas a usar la app, escribe cuántos llevas o deja la imagen en blanco para completarla en Instagram.'}
+        </p>
+        <input
+          type="text"
+          inputMode="numeric"
+          class="input-contador"
+          value={texto}
+          placeholder="Ej: 37"
+          aria-label="Cantidad de completos"
+          onInput={(e) => setTexto(e.currentTarget.value.replace(/\D/g, '').slice(0, 5))}
+        />
+        <button type="button" class="boton boton-primario boton-grande" disabled={!valido} onClick={() => alElegir(n)}>
+          🔢 Usar este número
+        </button>
+        <button type="button" class="boton boton-grande" onClick={() => alElegir(null)}>✍️ Dejarlo en blanco</button>
+      </div>
+    </Modal>
   );
 }
